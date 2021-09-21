@@ -25,5 +25,11 @@ public class Locomotive {
         this.maxWagons = maxWagons;
     }
 
+    @Override
+    public String toString() {
+        return "[Loc-" + locNumber + "]";
+    }
+
+
     // TODO
 }

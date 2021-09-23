@@ -1,6 +1,7 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 public abstract class Wagon {
     protected final int id;               // some unique ID of a Wagon
@@ -107,12 +108,10 @@ public abstract class Wagon {
 
             // initialise exception message and temporary wagon variable
             StringBuilder exceptionMsg = new StringBuilder();
-            Wagon tempWagon = tail.getLastWagonAttached();
 
             // loop through all previous wagons
-            while (tempWagon != null) {
+            for (Wagon tempWagon = tail.getLastWagonAttached(); tempWagon != null; tempWagon = tempWagon.getPreviousWagon()) {
                 exceptionMsg.append(tempWagon.toString()).append(", ");
-                tempWagon = tempWagon.getPreviousWagon();
             }
 
             // throw exception
@@ -227,32 +226,29 @@ public abstract class Wagon {
         // TODO provide an iterative implementation,
         //   using attach- and detach methods of this class
 
+        Stack<Wagon> stackRevSequence = new Stack<>();
 
-        int tailLength = getTailLength() + 1;
-        ArrayList<Wagon> reversedSequence = new ArrayList<>();
-
-        Wagon headWagon = getPreviousWagon();
-        Wagon lastWagon = getLastWagonAttached();
-
-        // fill array with in a reversed sequence
-        for (int i = 0; i < tailLength; i++) {
-            reversedSequence.add(lastWagon);
-            getLastWagonAttached().detachFront();
-            getLastWagonAttached().detachTail();
-            lastWagon = getLastWagonAttached();
+        for(Wagon temp = this; temp != null; temp = temp.getNextWagon()) {
+            stackRevSequence.push(temp);
         }
 
-        Wagon temp = headWagon; // Temporary pointer
+        Wagon headWagon = getPreviousWagon(); // Get the current head wagon
+        Wagon firstWagon = stackRevSequence.peek(); // get the first wagon of the reversed sequence
 
-        // loop through reversed sequence array and link all wagons together
-        for (Wagon wagon : reversedSequence) {
-            if (temp != null) {
-                temp.attachTail(wagon);
+        while(!stackRevSequence.empty()){
+            Wagon wagon = stackRevSequence.pop();
+
+            wagon.detachTail();
+            wagon.detachFront();
+
+            if(headWagon != null) {
+                headWagon.detachTail();
+                headWagon.attachTail(wagon);
             }
-            temp = wagon;
+
+            headWagon = wagon;
         }
 
-
-        return reversedSequence.get(0);
+        return firstWagon;
     }
 }

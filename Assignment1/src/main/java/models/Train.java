@@ -17,8 +17,6 @@ public class Train {
         this.engine = engine;
         this.destination = destination;
         this.origin = origin;
-
-        trainInvariant(); // check invariant
     }
 
     /* three helper methods that are usefull in other methods */
@@ -188,9 +186,7 @@ public class Train {
             }
 
             // check duplicate wagons
-            if (arrayTrain().indexOf(wagon) != -1) {
-                return false;
-            }
+            return arrayTrain().indexOf(wagon) == -1;
 
         }
 
@@ -301,12 +297,14 @@ public class Train {
         // detach current selected wagon from train
         if (wagon.hasPreviousWagon()) {
             wagon.detachFront();
+            assert head != null;
             head.detachTail();
         }
 
         // check if the sequence has to be reconnected or if there has to be a new firstwagon
         if (wagon.hasNextWagon()) {
             wagon.detachTail();
+            assert tail != null;
             tail.detachFront();
 
             if (head != null) {
@@ -395,14 +393,6 @@ public class Train {
         return wagons;
     }
 
-    /**
-     * Checks class representative invariant for correctness
-     */
-    public void trainInvariant() {
-        if (!(firstWagon == null || firstWagon.getPreviousWagon() == null && engine != null)) {
-            throw new IllegalStateException("Front Invariant rule broken");
-        }
-    }
 
     @Override
     public String toString() {
@@ -415,8 +405,8 @@ public class Train {
             trainString.append(wagon.toString());
         }
 
-        trainString.append(" With " + (firstWagon.getTailLength() + 1) + " wagons ");
-        trainString.append("from " + origin + " to " + destination + "");
+        trainString.append(" With ").append(firstWagon.getTailLength() + 1).append(" wagons ");
+        trainString.append("from ").append(origin).append(" to ").append(destination);
 
 
         return trainString.toString();

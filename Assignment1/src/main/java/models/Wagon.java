@@ -1,10 +1,9 @@
 package models;
 
 import java.util.ArrayList;
-import java.util.Stack;
 
 public abstract class Wagon {
-    protected int id;               // some unique ID of a Wagon
+    protected final int id;               // some unique ID of a Wagon
     private Wagon nextWagon;        // another wagon that is appended at the tail of this wagon
     // a.k.a. the successor of this wagon in a sequence
     // set to null if no successor is connected
@@ -101,7 +100,6 @@ public abstract class Wagon {
      * @throws IllegalStateException if tail is already attached to a wagon in front of it.
      */
     public void attachTail(Wagon tail) {
-        tailConnectionInvariant(this); // invariant check
         // TODO verify the exceptions
 
         // check if current wagon already has a wagon connected and if tail wagon has one infront
@@ -116,7 +114,6 @@ public abstract class Wagon {
                 exceptionMsg.append(tempWagon.toString()).append(", ");
                 tempWagon = tempWagon.getPreviousWagon();
             }
-            ;
 
             // throw exception
             throw new IllegalStateException(exceptionMsg.toString());
@@ -135,7 +132,6 @@ public abstract class Wagon {
      * or <code>null</code> if it had no wagons attached to its tail.
      */
     public Wagon detachTail() {
-        tailConnectionInvariant(this);
         // TODO detach the tail from this wagon (sustaining the invariant propositions).
         //  and return the head wagon of that tail
 
@@ -158,7 +154,6 @@ public abstract class Wagon {
      * or <code>null</code> if it had no previousWagon.
      */
     public Wagon detachFront() {
-        frontConnectionInvariant(this);
         // TODO detach this wagon from its predecessor (sustaining the invariant propositions).
         //   and return that predecessor
 
@@ -182,11 +177,8 @@ public abstract class Wagon {
      * @param front the wagon to which this wagon must be attached to.
      */
     public void reAttachTo(Wagon front) {
-        frontConnectionInvariant(this);
-
         // TODO detach any existing connections that will be rearranged
 
-        final Wagon FRONT_WAGON = front;
         final Wagon REATTACHED_WAGON = this;
 
         // separate this wagon from previous sequence
@@ -195,8 +187,8 @@ public abstract class Wagon {
         // TODO attach this wagon to its new predecessor front (sustaining the invariant propositions).
 
         // link this wagon to new front
-        REATTACHED_WAGON.setPreviousWagon(FRONT_WAGON);
-        FRONT_WAGON.setNextWagon(REATTACHED_WAGON);
+        REATTACHED_WAGON.setPreviousWagon(front);
+        front.setNextWagon(REATTACHED_WAGON);
     }
 
     /**
@@ -263,20 +255,4 @@ public abstract class Wagon {
 
         return reversedSequence.get(0);
     }
-
-
-    public void tailConnectionInvariant(Wagon wagon) {
-        if (!(wagon.nextWagon == null || wagon == wagon.nextWagon.previousWagon)) {
-            throw new IllegalStateException("Tail Invariant rule broken");
-        }
-
-    }
-
-    public void frontConnectionInvariant(Wagon wagon) {
-        if (!(wagon.previousWagon == null || wagon == wagon.previousWagon.nextWagon)) {
-            throw new IllegalStateException("Front Invariant rule broken");
-        }
-    }
-
-    // TODO
 }

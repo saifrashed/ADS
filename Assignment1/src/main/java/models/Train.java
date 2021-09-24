@@ -72,17 +72,17 @@ public class Train {
     public int getTotalNumberOfSeats() {
         // TODO
 
+        // check instance of first wagon
+        if (!(firstWagon instanceof PassengerWagon)) {
+            return 0;
+        }
+
         // initialise length variable and temporary wagon variable
         int numberOfSeats = 0;
 
-        if (firstWagon instanceof PassengerWagon) {
-            Wagon tempWagon = firstWagon;
-
-            // loop through all connected wagons
-            while (tempWagon != null) {
-                numberOfSeats += ((PassengerWagon) tempWagon).getNumberOfSeats();
-                tempWagon = tempWagon.getNextWagon();
-            }
+        // loop through all connected wagons
+        for (Wagon temp = firstWagon; temp != null; temp = temp.getNextWagon()) {
+            numberOfSeats += ((PassengerWagon) temp).getNumberOfSeats();
         }
 
         return numberOfSeats;
@@ -97,17 +97,17 @@ public class Train {
     public int getTotalMaxWeight() {
         // TODO
 
+        // check instance of first wagon
+        if (!(firstWagon instanceof FreightWagon)) {
+            return 0;
+        }
+
         // initialise length variable and temporary wagon variable
         int totalMaxWeight = 0;
 
-        if (firstWagon instanceof FreightWagon) {
-            Wagon tempWagon = firstWagon;
-
-            // loop through all connected wagons
-            while (tempWagon != null) {
-                totalMaxWeight += ((FreightWagon) tempWagon).getMaxWeight();
-                tempWagon = tempWagon.getNextWagon();
-            }
+        // loop through all connected wagons
+        for (Wagon temp = firstWagon; temp != null; temp = temp.getNextWagon()) {
+            totalMaxWeight += ((FreightWagon) temp).getMaxWeight();
         }
 
         return totalMaxWeight;
@@ -297,14 +297,12 @@ public class Train {
         // detach current selected wagon from train
         if (wagon.hasPreviousWagon()) {
             wagon.detachFront();
-            assert head != null;
             head.detachTail();
         }
 
         // check if the sequence has to be reconnected or if there has to be a new firstwagon
         if (wagon.hasNextWagon()) {
             wagon.detachTail();
-            assert tail != null;
             tail.detachFront();
 
             if (head != null) {
@@ -352,7 +350,11 @@ public class Train {
                     setFirstWagon(null);
                 }
 
-                toTrain.setFirstWagon(splitWagon);
+                if(!toTrain.hasWagons()) {
+                    toTrain.setFirstWagon(splitWagon);
+                } else {
+                    toTrain.getLastWagonAttached().attachTail(splitWagon);
+                }
 
                 return true;
             }

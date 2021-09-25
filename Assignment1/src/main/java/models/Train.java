@@ -186,7 +186,7 @@ public class Train {
             }
 
             // check duplicate wagons
-            return arrayTrain().indexOf(wagon) == -1;
+            return !arrayTrain().contains(wagon);
 
         }
 

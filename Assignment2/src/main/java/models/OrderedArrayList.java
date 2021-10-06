@@ -19,7 +19,7 @@ public class OrderedArrayList<E>
         this(null);
     }
 
-    public OrderedArrayList(Comparator<? super E> ordening ) {
+    public OrderedArrayList(Comparator<? super E> ordening) {
         super();
         this.ordening = ordening;
         this.nSorted = 0;
@@ -57,7 +57,7 @@ public class OrderedArrayList<E>
     @Override
     public int indexOf(Object item) {
         if (item != null) {
-            return indexOfByIterativeBinarySearch((E)item);
+            return indexOfByIterativeBinarySearch((E) item);
         } else {
             return -1;
         }
@@ -67,7 +67,7 @@ public class OrderedArrayList<E>
     public int indexOfByBinarySearch(E searchItem) {
         if (searchItem != null) {
             // some arbitrary choice to use the iterative or the recursive version
-            return indexOfByRecursiveBinarySearch(searchItem);
+            return indexOfByIterativeBinarySearch(searchItem);
         } else {
             return -1;
         }
@@ -79,15 +79,37 @@ public class OrderedArrayList<E>
      * If the item is not found in the sorted section, the unsorted section of the arrayList shall be searched by linear search.
      * The found item shall yield a 0 result from the this.ordening comparator, and that need not to be in agreement with the .equals test.
      * Here we follow the comparator for ordening items and for deciding on equality.
-     * @param searchItem    the item to be searched on the basis of comparison by this.ordening
-     * @return              the position index of the found item in the arrayList, or -1 if no item matches the search item.
+     *
+     * @param searchItem the item to be searched on the basis of comparison by this.ordening
+     * @return the position index of the found item in the arrayList, or -1 if no item matches the search item.
      */
     public int indexOfByIterativeBinarySearch(E searchItem) {
 
         // TODO implement an iterative binary search on the sorted section of the arrayList, 0 <= index < nSorted
         //   to find the position of an item that matches searchItem (this.ordening comparator yields a 0 result)
 
-
+//        int left = 0, right = arr.size() - 1;
+//
+//        while (left <= right)
+//        {
+//            int mid = left + (right - left) / 2;
+//
+//            // Check if x is present at mid
+//            if (arr.get(mid) == x)
+//                return mid;
+//
+//            // If x greater, ignore left half
+//            if (arr.get(mid) < x)
+//                left = mid + 1;
+//
+//                // If x is smaller, ignore right half
+//            else
+//                right = mid - 1;
+//        }
+//
+//        // if we reach here, then element was
+//        // not present
+//        return -1;
         // TODO if no match was found, attempt a linear search of searchItem in the section nSorted <= index < size()
 
         return -1;
@@ -99,8 +121,9 @@ public class OrderedArrayList<E>
      * If the item is not found in the sorted section, the unsorted section of the arrayList shall be searched by linear search.
      * The found item shall yield a 0 result from the this.ordening comparator, and that need not to be in agreement with the .equals test.
      * Here we follow the comparator for ordening items and for deciding on equality.
-     * @param searchItem    the item to be searched on the basis of comparison by this.ordening
-     * @return              the position index of the found item in the arrayList, or -1 if no item matches the search item.
+     *
+     * @param searchItem the item to be searched on the basis of comparison by this.ordening
+     * @return the position index of the found item in the arrayList, or -1 if no item matches the search item.
      */
     public int indexOfByRecursiveBinarySearch(E searchItem) {
 
@@ -116,12 +139,13 @@ public class OrderedArrayList<E>
      * finds a match of newItem in the list and applies the merger operator with the newItem to that match
      * i.e. the found match is replaced by the outcome of the merge between the match and the newItem
      * If no match is found in the list, the newItem is added to the list.
+     *
      * @param newItem
-     * @param merger    a function that takes two items and returns an item that contains the merged content of
-     *                  the two items according to some merging rule.
-     *                  e.g. a merger could add the value of attribute X of the second item
-     *                  to attribute X of the first item and then return the first item
-     * @return  whether a new item was added to the list or not
+     * @param merger  a function that takes two items and returns an item that contains the merged content of
+     *                the two items according to some merging rule.
+     *                e.g. a merger could add the value of attribute X of the second item
+     *                to attribute X of the first item and then return the first item
+     * @return whether a new item was added to the list or not
      */
     @Override
     public boolean merge(E newItem, BinaryOperator<E> merger) {

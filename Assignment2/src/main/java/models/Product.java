@@ -33,7 +33,6 @@ public class Product {
 
         List<String> splittedText = Arrays.asList(textLine.split(", ")); // split textline at ', ' into array
 
-
         Product newProduct = new Product(Long.parseLong(splittedText.get(0)), splittedText.get(1), Double.parseDouble(splittedText.get(2))); // create Product instance from textline
 
         // TODO convert the information in line to a new Product instance

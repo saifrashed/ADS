@@ -1,5 +1,6 @@
 package models;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Purchase {
@@ -20,6 +21,16 @@ public class Purchase {
      *          or null if the textLine is corrupt or incomplete
      */
     public static Purchase fromLine(String textLine, List<Product> products) {
+
+        List<String> splittedText = Arrays.asList(textLine.split(", ")); // split textline at ', ' into array
+
+        OrderedArrayList<Product> productArray = new OrderedArrayList<Product>();
+
+        productArray.addAll(products);
+
+        System.out.println(productArray.indexOfByBinarySearch(products.get(1)));
+//        (OrderedArrayList) productArray.ind
+
         Purchase newPurchase = null;
 
         // TODO convert the information in the textLine to a new Purchase instance

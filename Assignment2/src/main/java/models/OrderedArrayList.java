@@ -57,7 +57,7 @@ public class OrderedArrayList<E>
     @Override
     public int indexOf(Object item) {
         if (item != null) {
-            return indexOfByIterativeBinarySearch((E) item);
+            return indexOfByBinarySearch((E) item);
         } else {
             return -1;
         }
@@ -67,7 +67,7 @@ public class OrderedArrayList<E>
     public int indexOfByBinarySearch(E searchItem) {
         if (searchItem != null) {
             // some arbitrary choice to use the iterative or the recursive version
-            return indexOfByIterativeBinarySearch(searchItem);
+            return indexOfByRecursiveBinarySearch(0, nSorted - 1, searchItem);
         } else {
             return -1;
         }
@@ -88,6 +88,7 @@ public class OrderedArrayList<E>
         // TODO implement an iterative binary search on the sorted section of the arrayList, 0 <= index < nSorted
         //   to find the position of an item that matches searchItem (this.ordening comparator yields a 0 result)
 
+        // iterative binary search
         int low = 0;
         int high = nSorted - 1;
         int mid;
@@ -97,11 +98,20 @@ public class OrderedArrayList<E>
                 low = mid + 1;
             } else if (this.ordening.compare(this.get(mid), searchItem) > 0) {
                 high = mid - 1;
-            } else {
+            } else if (this.ordening.compare(this.get(mid), searchItem) == 0) {
                 return mid;
             }
         }
         // TODO if no match was found, attempt a linear search of searchItem in the section nSorted <= index < size()
+
+
+        // linear search in unsorted section
+        high = this.size() - 1;
+
+        for (low = nSorted; low <= high; low++)
+            if (this.ordening.compare(this.get(low), searchItem) == 0) {
+                return low;
+            }
 
         return -1;
     }
@@ -116,13 +126,42 @@ public class OrderedArrayList<E>
      * @param searchItem the item to be searched on the basis of comparison by this.ordening
      * @return the position index of the found item in the arrayList, or -1 if no item matches the search item.
      */
-    public int indexOfByRecursiveBinarySearch(E searchItem) {
+    public int indexOfByRecursiveBinarySearch(int low, int high, E searchItem) {
 
         // TODO implement a recursive binary search on the sorted section of the arrayList, 0 <= index < nSorted
         //   to find the position of an item that matches searchItem (this.ordening comparator yields a 0 result)
 
+        if (high >= low) {
+            int mid = low + (high - low) / 2;
+
+            // If the element is present at the
+            // middle itself
+            if (this.ordening.compare(this.get(mid), searchItem) == 0)
+                return mid;
+
+            // If element is smaller than mid, then
+            // it can only be present in left subarray
+            if (this.ordening.compare(this.get(mid), searchItem) > 0)
+                return indexOfByRecursiveBinarySearch(low, mid - 1, searchItem);
+
+            // Else the element can only be present
+            // in right subarray
+            return indexOfByRecursiveBinarySearch(mid + 1, high, searchItem);
+        }
+
+
         // TODO if no match was found, attempt a linear search of searchItem in the section nSorted <= index < size()
 
+        // linear search in unsorted section
+        high = this.size() - 1;
+
+        for (low = nSorted; low <= high; low++)
+            if (this.ordening.compare(this.get(low), searchItem) == 0) {
+                return low;
+            }
+
+        // We reach here when element is not present
+        //  in array
         return -1;
     }
 
@@ -141,7 +180,7 @@ public class OrderedArrayList<E>
     @Override
     public boolean merge(E newItem, BinaryOperator<E> merger) {
         if (newItem == null) return false;
-        int matchedItemIndex = this.indexOfByRecursiveBinarySearch(newItem);
+        int matchedItemIndex = this.indexOfByRecursiveBinarySearch(0, nSorted - 1, newItem);
 
         if (matchedItemIndex < 0) {
             this.add(newItem);

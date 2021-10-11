@@ -17,6 +17,9 @@ public class PurchaseTracker {
     public PurchaseTracker() {
         // TODO initialize products and purchases with an empty ordered list which sorts items by barcode.
         //  Use your generic implementation class OrderedArrayList
+
+        products = new OrderedArrayList<Product>();
+        purchases = new OrderedArrayList<Purchase>();
     }
 
     /**

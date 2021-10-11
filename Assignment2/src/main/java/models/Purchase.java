@@ -77,7 +77,7 @@ public class Purchase {
 
 
     public String toString() {
-        String price = String.format("%.2f",(product.getPrice() * this.getCount())).replace(",", ".");
+        String price = String.format("%.2f", (product.getPrice() * this.getCount())).replace(",", ".");
         return product.getBarcode() + "/" + product.getTitle() + '/' + this.getCount() + "/" + price;
     }
 

@@ -88,28 +88,19 @@ public class OrderedArrayList<E>
         // TODO implement an iterative binary search on the sorted section of the arrayList, 0 <= index < nSorted
         //   to find the position of an item that matches searchItem (this.ordening comparator yields a 0 result)
 
-//        int left = 0, right = arr.size() - 1;
-//
-//        while (left <= right)
-//        {
-//            int mid = left + (right - left) / 2;
-//
-//            // Check if x is present at mid
-//            if (arr.get(mid) == x)
-//                return mid;
-//
-//            // If x greater, ignore left half
-//            if (arr.get(mid) < x)
-//                left = mid + 1;
-//
-//                // If x is smaller, ignore right half
-//            else
-//                right = mid - 1;
-//        }
-//
-//        // if we reach here, then element was
-//        // not present
-//        return -1;
+        int low = 0;
+        int high = nSorted - 1;
+        int mid;
+        while (low <= high) {
+            mid = (low + high) / 2;
+            if (this.ordening.compare(this.get(mid), searchItem) < 0) {
+                low = mid + 1;
+            } else if (this.ordening.compare(this.get(mid), searchItem) > 0) {
+                high = mid - 1;
+            } else {
+                return mid;
+            }
+        }
         // TODO if no match was found, attempt a linear search of searchItem in the section nSorted <= index < size()
 
         return -1;

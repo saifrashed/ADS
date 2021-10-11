@@ -3,11 +3,12 @@ package models;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import java.lang.Long;
 
-public class Product {
+public class Product implements Comparable {
     private final long barcode;
     private String title;
     private double price;
@@ -61,6 +62,24 @@ public class Product {
         if (this == other) return true;
         if (!(other instanceof Product)) return false;
         return this.getBarcode() == ((Product) other).getBarcode();
+    }
+
+    @Override
+    public int compareTo(Object other) {
+
+        if (this.getBarcode() > ((Product) other).getBarcode()) {
+
+            // if current object is greater,then return 1
+            return 1;
+        } else if (this.getBarcode() < ((Product) other).getBarcode()) {
+
+            // if current object is greater,then return -1
+            return -1;
+        } else {
+
+            // if current object is equal to o,then return 0
+            return 0;
+        }
     }
 
     @Override

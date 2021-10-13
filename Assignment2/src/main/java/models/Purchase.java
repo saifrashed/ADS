@@ -28,15 +28,13 @@ public class Purchase {
 
         List<String> splittedText = Arrays.asList(textLine.split(", ")); // split textline at ', ' into array
 
-        // find object within products
-        Product targetProduct = products.stream().filter(product -> Long.parseLong(splittedText.get(0)) == (product.getBarcode())).findAny().orElse(null);
 
         // place products in OrderedArrayList to allow custom operations.
         OrderedArrayList<Product> productArray = new OrderedArrayList<>();
         productArray.addAll(products);
         productArray.sort(Product::compareTo);
 
-        int productIndex = productArray.indexOf(targetProduct);
+        int productIndex = productArray.indexOf(new Product(Long.parseLong(splittedText.get(0))));
 
         Purchase newPurchase = new Purchase(productArray.get(productIndex), Integer.parseInt(splittedText.get(1)));
 

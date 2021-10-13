@@ -28,12 +28,8 @@ public class Purchase {
 
         List<String> splittedText = Arrays.asList(textLine.split(", ")); // split textline at ', ' into array
 
-
         // find object within products
         Product targetProduct = products.stream().filter(product -> Long.parseLong(splittedText.get(0)) == (product.getBarcode())).findAny().orElse(null);
-
-        System.out.println(splittedText.get(1));
-        System.out.println(targetProduct);
 
         // place products in OrderedArrayList to allow custom operations.
         OrderedArrayList<Product> productArray = new OrderedArrayList<>();

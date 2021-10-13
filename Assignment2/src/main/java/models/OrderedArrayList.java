@@ -1,7 +1,9 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Scanner;
 import java.util.function.BinaryOperator;
 
 public class OrderedArrayList<E>

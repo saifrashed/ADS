@@ -29,35 +29,19 @@ public class Purchase {
 
         List<String> splittedText = Arrays.asList(textLine.split(", ")); // split textline at ', ' into array
 
+        // Get product index for requested purchase line
+        int productIndex = products.indexOf(new Product(Long.parseLong(splittedText.get(0))));
 
-        // place products in OrderedArrayList to allow custom operations.
-//        OrderedArrayList<Product> productArray = new OrderedArrayList<>();
-//        productArray.addAll(products);
-//        productArray.sort(Product::compareTo);
+        if(productIndex != -1){
+            Purchase newPurchase = new Purchase(products.get(productIndex), Integer.parseInt(splittedText.get(1)));
 
-        System.out.println(textLine + "DIT IS DE TEXTLINE");
+            // TODO convert the information in the textLine to a new Purchase instance
+            //  use the products.indexOf to find the product that is associated with the barcode of the purchase
 
-        int productIndex = 0;
-
-        try {
-             productIndex = products.indexOf(new Product(Long.parseLong(splittedText.get(0))));
-
-        } catch(Exception e) {
-            System.out.println(e);
+            return newPurchase;
+        } else {
+            return null;
         }
-
-        System.out.println(productIndex + "dit is de index");
-
-        if(productIndex == -1) {
-            System.out.println(textLine + "ewa");
-        }
-
-        Purchase newPurchase = new Purchase(products.get(productIndex), Integer.parseInt(splittedText.get(1)));
-
-        // TODO convert the information in the textLine to a new Purchase instance
-        //  use the products.indexOf to find the product that is associated with the barcode of the purchase
-
-        return newPurchase;
     }
 
     /**
@@ -85,11 +69,10 @@ public class Purchase {
         return product;
     }
 
-
     public String toString() {
         String price = String.format("%.2f", (product.getPrice() * this.getCount())).replace(",", ".");
 
-        return String.format("%s/%s/%d/%s",product.getBarcode(), product.getTitle(), this.getCount(), price);
+        return String.format("%s/%s/%d/%s\n",product.getBarcode(), product.getTitle(), this.getCount(), price);
     }
 
 

@@ -1,9 +1,6 @@
 package models;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.BinaryOperator;
 
 public class OrderedArrayList<E>
@@ -48,6 +45,21 @@ public class OrderedArrayList<E>
     //  such that they sustain the representation invariant of OrderedArrayList
     //  (hint: only change nSorted as required to guarantee the representation invariant, do not invoke a sort)
 
+    @Override
+    public boolean remove(Object o) {
+
+        // check if the to be removed object falls within the sorted sequence. If so decrement nSorted size
+        if(indexOf(o) != -1 && indexOf(o) < nSorted) {
+            nSorted--;
+        }
+
+        return super.remove(o);
+    }
+
+    @Override
+    public boolean add(E e) {
+        return super.add(e);
+    }
 
     @Override
     public void sort() {
@@ -90,6 +102,8 @@ public class OrderedArrayList<E>
         // TODO implement an iterative binary search on the sorted section of the arrayList, 0 <= index < nSorted
         //   to find the position of an item that matches searchItem (this.ordening comparator yields a 0 result)
 
+        if(size() == -1) return -1; // check if list is empty
+
         // iterative binary search
         int low = 0;
         int high = nSorted - 1;
@@ -108,12 +122,9 @@ public class OrderedArrayList<E>
 
 
         // linear search in unsorted section
-        high = this.size() - 1;
+        for (int ndx = nSorted; ndx < this.size(); ndx++)
+            if (this.ordening.compare(this.get(ndx), searchItem) == 0) return ndx;
 
-        for (low = nSorted; low <= high; low++)
-            if (this.ordening.compare(this.get(low), searchItem) == 0) {
-                return low;
-            }
 
         return -1;
     }
@@ -128,48 +139,46 @@ public class OrderedArrayList<E>
      * @param searchItem the item to be searched on the basis of comparison by this.ordening
      * @return the position index of the found item in the arrayList, or -1 if no item matches the search item.
      */
-//    public int indexOfByRecursiveBinarySearch2(int low, int high, E searchItem) {
-//
-//        // TODO implement a recursive binary search on the sorted section of the arrayList, 0 <= index < nSorted
-//        //   to find the position of an item that matches searchItem (this.ordening comparator yields a 0 result)
-//
-//        if (high >= low) {
-//            int mid = low + (high - low) / 2;
-//
-//            // If the element is present at the
-//            // middle itself
-//            if (this.ordening.compare(this.get(mid), searchItem) == 0)
-//                return mid;
-//
-//            // If element is smaller than mid, then
-//            // it can only be present in left subarray
-//            if (this.ordening.compare(this.get(mid), searchItem) > 0)
-//                return indexOfByRecursiveBinarySearch(low, mid - 1, searchItem);
-//
-//            // Else the element can only be present
-//            // in right subarray
-//            return indexOfByRecursiveBinarySearch(mid + 1, high, searchItem);
-//        }
-//
-//
-//        // TODO if no match was found, attempt a linear search of searchItem in the section nSorted <= index < size()
-//
-//        // linear search in unsorted section
-//        high = this.size() - 1;
-//
-//        for (low = nSorted; low <= high; low++)
-//            if (this.ordening.compare(this.get(low), searchItem) == 0) {
-//                return low;
-//            }
-//
-//        // We reach here when element is not present
-//        //  in array
-//        return -1;
-//    }
-
     public int indexOfByRecursiveBinarySearch(E searchItem) {
-        for (int ndx = 0; ndx < this.size(); ndx++) if (this.ordening.compare(this.get(ndx), searchItem) == 0) return ndx;
 
+        if(size() == -1) return -1; // check if list is empty
+
+        int recursiveIndex = indexOfRecursiveHelper(0, nSorted, searchItem);
+
+        if (recursiveIndex != -1) {
+            return recursiveIndex;
+        }
+
+        for (int ndx = nSorted; ndx < this.size(); ndx++)
+            if (this.ordening.compare(this.get(ndx), searchItem) == 0) return ndx;
+
+        return -1;
+    }
+
+    public int indexOfRecursiveHelper(int l, int r, E item) {
+        //Restrict the boundary of right index
+        // and the left index to prevent
+        // overflow of indices.
+        if (r >= l && l < nSorted) {
+
+            int mid = l + (r - l) / 2;
+
+            // If the element is present
+            // at the middle itself
+            if (this.ordening.compare(this.get(mid), item) == 0)
+                return mid;
+
+            // If element is smaller than mid, then it can only
+            // be present in left subarray
+            if (this.ordening.compare(this.get(mid), item) > 0)
+                return indexOfRecursiveHelper(l, mid - 1, item);
+
+            // Else the element can only be present in right
+            // subarray
+            return indexOfRecursiveHelper(mid + 1, r, item);
+        }
+
+        // We reach here when element is not present in array
         return -1;
     }
 
@@ -188,12 +197,12 @@ public class OrderedArrayList<E>
      */
     @Override
     public boolean merge(E newItem, BinaryOperator<E> merger) {
+
         if (newItem == null) return false;
         int matchedItemIndex = this.indexOfByRecursiveBinarySearch(newItem);
-        System.out.println(matchedItemIndex);
 
         if (matchedItemIndex < 0) {
-            this.add(newItem);
+            add(newItem);
             return true;
         } else {
             // TODO retrieve the matched item and

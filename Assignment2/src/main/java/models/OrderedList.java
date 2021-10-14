@@ -15,6 +15,10 @@ public interface OrderedList<E> extends List<E> {
         double sum = 0;
         // TODO aggregate the mapped value across all items in the list
 
+        for(int ndx = 0; ndx < size(); ndx++) {
+            sum += mapper.applyAsDouble(get(ndx));
+        }
+
         return sum;
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 
 import java.lang.Long;
 
-public class Product implements Comparable {
+public class Product {
     private final long barcode;
     private String title;
     private double price;
@@ -33,6 +33,7 @@ public class Product implements Comparable {
     public static Product fromLine(String textLine) {
 
         List<String> splittedText = Arrays.asList(textLine.split(", ")); // split textline at ', ' into array
+
 
         Product newProduct = new Product(Long.parseLong(splittedText.get(0)), splittedText.get(1), Double.parseDouble(splittedText.get(2))); // create Product instance from textline
 
@@ -64,27 +65,10 @@ public class Product implements Comparable {
         return this.getBarcode() == ((Product) other).getBarcode();
     }
 
-    @Override
-    public int compareTo(Object other) {
-
-        if (this.getBarcode() > ((Product) other).getBarcode()) {
-
-            // if current object is greater,then return 1
-            return 1;
-        } else if (this.getBarcode() < ((Product) other).getBarcode()) {
-
-            // if current object is greater,then return -1
-            return -1;
-        } else {
-
-            // if current object is equal to o,then return 0
-            return 0;
-        }
-    }
 
     @Override
     public String toString() {
-        return String.format("%s/%s/%s",barcode, title, price);
+        return String.format("%s/%s/%s\n",barcode, title, price);
     }
 
     // TODO add public and private methods as per your requirements

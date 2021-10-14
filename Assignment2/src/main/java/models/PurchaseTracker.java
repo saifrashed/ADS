@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
 
 public class PurchaseTracker {
     private final String PURCHASE_FILE_PATTERN = ".*\\.txt";
@@ -19,8 +20,25 @@ public class PurchaseTracker {
         // TODO initialize products and purchases with an empty ordered list which sorts items by barcode.
         //  Use your generic implementation class OrderedArrayList
 
-        products = new OrderedArrayList<>((p1, p2) -> (int) (p1.getBarcode() - p2.getBarcode()));
-        purchases = new OrderedArrayList<>((o1, o2) -> o1.getProduct().compareTo(o2.getProduct()));
+        products = new OrderedArrayList<>((o1, o2) -> {
+            if (o1.getBarcode() > o2.getBarcode()) {
+                return 1;
+            } else if (o1.getBarcode() < o2.getBarcode()) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
+
+        purchases = new OrderedArrayList<>((o1, o2) -> {
+            if (o1.getProduct().getBarcode() > o2.getProduct().getBarcode()) {
+                return 1;
+            } else if (o1.getProduct().getBarcode() < o2.getProduct().getBarcode()) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
     }
 
     /**
@@ -38,7 +56,6 @@ public class PurchaseTracker {
 
         // sort the products for efficient later retrieval
         this.products.sort();
-
 
         System.out.printf("Imported %d products from %s.\n", products.size(), resourceName);
     }
@@ -81,8 +98,6 @@ public class PurchaseTracker {
             // the file is a regular file that matches the target pattern for raw purchase files
             // merge the content of this file into this.purchases
 
-            System.out.println(file.getName());
-
             this.mergePurchasesFromFile(file.getAbsolutePath());
         }
     }
@@ -114,12 +129,8 @@ public class PurchaseTracker {
      */
     public void showTotals() {
         // TODO provide the mappers to calculate the specified aggregated quantities
-        System.out.printf("Total volume of all purchases: %.0f\n",
-
-                null);
-        System.out.printf("Total revenue from all purchases: %.2f\n",
-
-                null);
+        System.out.printf("Total volume of all purchases: %.0f\n", this.purchases.aggregate(Purchase::getCount));
+        System.out.printf("Total revenue from all purchases: %.2f\n", this.purchases.aggregate(value -> value.getCount() * value.getProduct().getPrice()));
     }
 
     /**
@@ -149,7 +160,7 @@ public class PurchaseTracker {
             // TODO add the item to the list of items
 
         }
-        System.out.printf("Imported %d items from %s.\n", items.size() - originalNumItems, filePath);
+//        System.out.printf("Imported %d items from %s.\n", items.size() - originalNumItems, filePath);
     }
 
     /**
@@ -180,7 +191,7 @@ public class PurchaseTracker {
         }
 
         int addedCount = purchases.size() - originalNumPurchases;
-        System.out.printf("Merged %d, added %d new purchases from %s.\n", newPurchases.size() - addedCount, addedCount, filePath);
+//        System.out.printf("Merged %d, added %d new purchases from %s.\n", newPurchases.size() - addedCount, addedCount, filePath);
     }
 
     /**
@@ -191,7 +202,6 @@ public class PurchaseTracker {
      */
     private static Scanner createFileScanner(String filePath) {
         try {
-            System.out.println(filePath);
             return new Scanner(new File(filePath));
         } catch (FileNotFoundException e) {
             throw new RuntimeException("FileNotFound exception on path: " + filePath);

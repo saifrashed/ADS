@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class Purchase {
     private final Product product;
@@ -30,19 +31,28 @@ public class Purchase {
 
 
         // place products in OrderedArrayList to allow custom operations.
-        OrderedArrayList<Product> productArray = new OrderedArrayList<>();
-        productArray.addAll(products);
-        productArray.sort(Product::compareTo);
+//        OrderedArrayList<Product> productArray = new OrderedArrayList<>();
+//        productArray.addAll(products);
+//        productArray.sort(Product::compareTo);
 
-        int productIndex = productArray.indexOf(new Product(Long.parseLong(splittedText.get(0))));
+        System.out.println(textLine + "DIT IS DE TEXTLINE");
 
-        System.out.println(productIndex);
+        int productIndex = 0;
 
-        if(productIndex == -1) {
-            System.out.println(textLine);
+        try {
+             productIndex = products.indexOf(new Product(Long.parseLong(splittedText.get(0))));
+
+        } catch(Exception e) {
+            System.out.println(e);
         }
 
-        Purchase newPurchase = new Purchase(productArray.get(productIndex), Integer.parseInt(splittedText.get(1)));
+        System.out.println(productIndex + "dit is de index");
+
+        if(productIndex == -1) {
+            System.out.println(textLine + "ewa");
+        }
+
+        Purchase newPurchase = new Purchase(products.get(productIndex), Integer.parseInt(splittedText.get(1)));
 
         // TODO convert the information in the textLine to a new Purchase instance
         //  use the products.indexOf to find the product that is associated with the barcode of the purchase

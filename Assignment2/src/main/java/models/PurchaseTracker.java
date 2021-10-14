@@ -19,8 +19,8 @@ public class PurchaseTracker {
         // TODO initialize products and purchases with an empty ordered list which sorts items by barcode.
         //  Use your generic implementation class OrderedArrayList
 
-        products = new OrderedArrayList<>();
-        purchases = new OrderedArrayList<>();
+        products = new OrderedArrayList<>((p1, p2) -> (int) (p1.getBarcode() - p2.getBarcode()));
+        purchases = new OrderedArrayList<>((o1, o2) -> o1.getProduct().compareTo(o2.getProduct()));
     }
 
     /**

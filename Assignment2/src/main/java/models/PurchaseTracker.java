@@ -74,13 +74,7 @@ public class PurchaseTracker {
 
             // TODO merge all purchases of all files and sub folders from the filesInDirectory list, recursively.
 
-            for (File currentFile : filesInDirectory) {
-                if (currentFile.isDirectory()) {
-                    mergePurchasesFromFileRecursively(currentFile.getPath());
-                } else {
-                    this.mergePurchasesFromFile(currentFile.getAbsolutePath());
-                }
-            }
+            for (File currentFile : filesInDirectory) mergePurchasesFromFileRecursively(currentFile.getAbsolutePath());
 
 
         } else if (file.getName().matches(PURCHASE_FILE_PATTERN)) {

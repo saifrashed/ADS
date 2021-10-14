@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
 public class PurchaseTracker {
@@ -18,12 +19,13 @@ public class PurchaseTracker {
         // TODO initialize products and purchases with an empty ordered list which sorts items by barcode.
         //  Use your generic implementation class OrderedArrayList
 
-        products = new OrderedArrayList<Product>();
-        purchases = new OrderedArrayList<Purchase>();
+        products = new OrderedArrayList<>();
+        purchases = new OrderedArrayList<>();
     }
 
     /**
      * imports all products from a resource file that is common to all branches of the Supermarket chain
+     *
      * @param resourceName
      */
     public void importProductsFromVault(String resourceName) {
@@ -37,11 +39,13 @@ public class PurchaseTracker {
         // sort the products for efficient later retrieval
         this.products.sort();
 
+
         System.out.printf("Imported %d products from %s.\n", products.size(), resourceName);
     }
 
     /**
      * imports and merges all raw purchase data of all branches from the hierarchical file structure of the vault
+     *
      * @param resourceName
      */
     public void importPurchasesFromVault(String resourceName) {
@@ -55,11 +59,13 @@ public class PurchaseTracker {
 
     /**
      * traverses the purchases vault recursively and processes every data file that it finds
+     *
      * @param filePath
      */
     private void mergePurchasesFromFileRecursively(String filePath) {
 
         File file = new File(filePath);
+
 
         if (file.isDirectory()) {
             // the file is a folder (a.k.a. directory)
@@ -68,19 +74,31 @@ public class PurchaseTracker {
 
             // TODO merge all purchases of all files and sub folders from the filesInDirectory list, recursively.
 
+            for (File currentFile : filesInDirectory) {
+                if (currentFile.isDirectory()) {
+                    mergePurchasesFromFileRecursively(currentFile.getPath());
+                } else {
+                    this.mergePurchasesFromFile(currentFile.getAbsolutePath());
+                }
+            }
+
 
         } else if (file.getName().matches(PURCHASE_FILE_PATTERN)) {
             // the file is a regular file that matches the target pattern for raw purchase files
             // merge the content of this file into this.purchases
+
+            System.out.println(file.getName());
+
             this.mergePurchasesFromFile(file.getAbsolutePath());
         }
     }
 
     /**
      * show the top n purchases according to the ranking criterium specified by ranker
-     * @param n             the number of top purchases to be shown
-     * @param subTitle      some title text that clarifies the list
-     * @param ranker        the comparator used to rank the purchases
+     *
+     * @param n        the number of top purchases to be shown
+     * @param subTitle some title text that clarifies the list
+     * @param ranker   the comparator used to rank the purchases
      */
     public void showTops(int n, String subTitle, Comparator<Purchase> ranker) {
         System.out.printf("%d purchases with %s:\n", n, subTitle);
@@ -93,7 +111,7 @@ public class PurchaseTracker {
 
         // show the top items
         for (int rank = 0; rank < n && rank < tops.size(); rank++) {
-            System.out.printf("%d: %s\n", rank+1, tops.get(rank));
+            System.out.printf("%d: %s\n", rank + 1, tops.get(rank));
         }
     }
 
@@ -112,12 +130,13 @@ public class PurchaseTracker {
 
     /**
      * imports a collection of items from a text file which provides one line for each item
-     * @param items         the list to which imported items shall be added
-     * @param filePath      the file path of the source text file
-     * @param converter     a function that can convert a text line into a new item instance
-     * @param <E>           the (generic) type of each item
+     *
+     * @param items     the list to which imported items shall be added
+     * @param filePath  the file path of the source text file
+     * @param converter a function that can convert a text line into a new item instance
+     * @param <E>       the (generic) type of each item
      */
-    public static <E> void importItemsFromFile(List<E> items, String filePath, Function<String,E> converter) {
+    public static <E> void importItemsFromFile(List<E> items, String filePath, Function<String, E> converter) {
         int originalNumItems = items.size();
 
         Scanner scanner = createFileScanner(filePath);
@@ -131,16 +150,18 @@ public class PurchaseTracker {
 
             // TODO convert the line to an instance of E
 
+            items.add(converter.apply(line));
 
             // TODO add the item to the list of items
 
         }
-        //System.out.printf("Imported %d items from %s.\n", items.size() - originalNumItems, filePath);
+        System.out.printf("Imported %d items from %s.\n", items.size() - originalNumItems, filePath);
     }
 
     /**
      * imports another batch of raw purchase data from the filePath text file
      * and merges the purchase amounts with the earlier imported and accumulated collection in this.purchases
+     *
      * @param filePath
      */
     private void mergePurchasesFromFile(String filePath) {
@@ -154,27 +175,29 @@ public class PurchaseTracker {
 
         // TODO import all purchases from the specified file into the newPurchases list
         importItemsFromFile(newPurchases, filePath,
-                null
+                s -> Purchase.fromLine(s, products)
         );
 
         // TODO merge all purchases from the newPurchases list into this.purchases
         for (Purchase purchase : newPurchases) {
             this.purchases.merge(purchase,
-                    null
+                    (purchase1, purchase2) -> new Purchase(purchase1.getProduct(), (purchase1.getCount() + purchase2.getCount()))
             );
         }
 
         int addedCount = purchases.size() - originalNumPurchases;
-        //System.out.printf("Merged %d, added %d new purchases from %s.\n", newPurchases.size() - addedCount, addedCount, filePath);
+        System.out.printf("Merged %d, added %d new purchases from %s.\n", newPurchases.size() - addedCount, addedCount, filePath);
     }
 
     /**
      * helper method to create a scanner on a file an handle the exception
+     *
      * @param filePath
      * @return
      */
     private static Scanner createFileScanner(String filePath) {
         try {
+            System.out.println(filePath);
             return new Scanner(new File(filePath));
         } catch (FileNotFoundException e) {
             throw new RuntimeException("FileNotFound exception on path: " + filePath);

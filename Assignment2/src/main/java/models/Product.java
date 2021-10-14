@@ -84,7 +84,7 @@ public class Product implements Comparable {
 
     @Override
     public String toString() {
-        return barcode + "/" + title + '/' + price;
+        return String.format("%s/%s/%s",barcode, title, price);
     }
 
     // TODO add public and private methods as per your requirements

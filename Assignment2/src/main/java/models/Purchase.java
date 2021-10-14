@@ -36,6 +36,12 @@ public class Purchase {
 
         int productIndex = productArray.indexOf(new Product(Long.parseLong(splittedText.get(0))));
 
+        System.out.println(productIndex);
+
+        if(productIndex == -1) {
+            System.out.println(textLine);
+        }
+
         Purchase newPurchase = new Purchase(productArray.get(productIndex), Integer.parseInt(splittedText.get(1)));
 
         // TODO convert the information in the textLine to a new Purchase instance
@@ -72,7 +78,8 @@ public class Purchase {
 
     public String toString() {
         String price = String.format("%.2f", (product.getPrice() * this.getCount())).replace(",", ".");
-        return product.getBarcode() + "/" + product.getTitle() + '/' + this.getCount() + "/" + price;
+
+        return String.format("%s/%s/%d/%s",product.getBarcode(), product.getTitle(), this.getCount(), price);
     }
 
 

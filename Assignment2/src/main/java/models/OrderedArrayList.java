@@ -70,6 +70,8 @@ public class OrderedArrayList<E>
     @Override
     public void add(int index, E element) {
 
+        // Check if index falls within nSorted, if so we can not consider anything after
+        // index to be sorted and so nSorted will be value of index.
         if (index <= nSorted) {
             nSorted = index;
         }

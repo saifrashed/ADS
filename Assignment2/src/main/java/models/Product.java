@@ -31,11 +31,16 @@ public class Product {
      * or null if the textLine is corrupt or incomplete
      */
     public static Product fromLine(String textLine) {
-        List<String> splittedText = Arrays.asList(textLine.split(", ")); // split textline at ', ' into array
-        Product newProduct = new Product(Long.parseLong(splittedText.get(0)), splittedText.get(1), Double.parseDouble(splittedText.get(2))); // create Product instance from textline
+        try {
+            List<String> splittedText = Arrays.asList(textLine.split(", ")); // split textline at ', ' into array
+            Product newProduct = new Product(Long.parseLong(splittedText.get(0)), splittedText.get(1), Double.parseDouble(splittedText.get(2))); // create Product instance from textline
 
-        // TODO convert the information in line to a new Product instance
-        return newProduct;
+            // TODO convert the information in line to a new Product instance
+            return newProduct;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
     public long getBarcode() {

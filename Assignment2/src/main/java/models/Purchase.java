@@ -72,7 +72,7 @@ public class Purchase {
     public String toString() {
         String price = String.format("%.2f", (product.getPrice() * this.getCount())).replace(",", ".");
 
-        return String.format("%s/%s/%d/%s\n",product.getBarcode(), product.getTitle(), this.getCount(), price);
+        return String.format("%s/%s/%d/%s",product.getBarcode(), product.getTitle(), this.getCount(), price);
     }
 
 

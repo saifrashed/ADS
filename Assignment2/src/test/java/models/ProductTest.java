@@ -18,7 +18,7 @@ public class ProductTest {
     public void aProductHasAStringRepresentation() {
         assertEquals("111111111111111/Stroopwafels 10st/1.23", stroopwafels.toString());
     }
-
+    
     @Test
     public void canConvertATextLineToAProduct() {
         Product product1 = Product.fromLine("111111111111111, Mars bar, 0.90");

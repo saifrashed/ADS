@@ -76,7 +76,15 @@ public class ProductsListTest {
     @Test
     public void insertSustainsRepresentationInvariant() {
         products.sort();
+
+        products.forEach(product -> System.out.println(product));
+
         products.add(products.size()-1, product3a);
+
+        System.out.println("\n\n");
+
+        products.forEach(product -> System.out.println(product));
+
         assertEquals(products.size()-2, products.indexOf(product3a));
     }
 
@@ -84,9 +92,14 @@ public class ProductsListTest {
     public void removeSustainsRepresentationInvariant() {
         products.sort();
         products.add(product3a);
+
         assertEquals(products.size()-1, products.indexOf(product3a));
         products.remove(5);
+
         assertEquals(products.size()-1, products.indexOf(product3a));
+
+        System.out.println(products.indexOf(product3a));
+
         products.remove(product1);
         assertEquals(products.size()-1, products.indexOf(product3a));
         products.remove(products.size()-1);

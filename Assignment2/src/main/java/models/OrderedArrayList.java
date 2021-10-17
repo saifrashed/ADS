@@ -45,11 +45,22 @@ public class OrderedArrayList<E>
     //  such that they sustain the representation invariant of OrderedArrayList
     //  (hint: only change nSorted as required to guarantee the representation invariant, do not invoke a sort)
 
+
+    @Override
+    public E remove(int index) {
+
+        if (index <= nSorted) {
+            nSorted--;
+        }
+
+        return super.remove(index);
+    }
+
     @Override
     public boolean remove(Object o) {
 
         // check if the to be removed object falls within the sorted sequence. If so decrement nSorted size
-        if(indexOf(o) != -1 && indexOf(o) < nSorted) {
+        if (indexOf(o) != -1 && indexOf(o) < nSorted) {
             nSorted--;
         }
 
@@ -57,8 +68,13 @@ public class OrderedArrayList<E>
     }
 
     @Override
-    public boolean add(E e) {
-        return super.add(e);
+    public void add(int index, E element) {
+
+        if (index <= nSorted) {
+            nSorted = index;
+        }
+
+        super.add(index, element);
     }
 
     @Override
@@ -102,8 +118,6 @@ public class OrderedArrayList<E>
         // TODO implement an iterative binary search on the sorted section of the arrayList, 0 <= index < nSorted
         //   to find the position of an item that matches searchItem (this.ordening comparator yields a 0 result)
 
-        if(size() == -1) return -1; // check if list is empty
-
         // iterative binary search
         int low = 0;
         int high = nSorted - 1;
@@ -140,8 +154,6 @@ public class OrderedArrayList<E>
      * @return the position index of the found item in the arrayList, or -1 if no item matches the search item.
      */
     public int indexOfByRecursiveBinarySearch(E searchItem) {
-
-        if(size() == -1) return -1; // check if list is empty
 
         int recursiveIndex = indexOfRecursiveHelper(0, nSorted, searchItem);
 

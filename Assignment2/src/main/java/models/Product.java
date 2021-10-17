@@ -31,14 +31,10 @@ public class Product {
      * or null if the textLine is corrupt or incomplete
      */
     public static Product fromLine(String textLine) {
-
         List<String> splittedText = Arrays.asList(textLine.split(", ")); // split textline at ', ' into array
-
-
         Product newProduct = new Product(Long.parseLong(splittedText.get(0)), splittedText.get(1), Double.parseDouble(splittedText.get(2))); // create Product instance from textline
 
         // TODO convert the information in line to a new Product instance
-
         return newProduct;
     }
 
@@ -68,7 +64,7 @@ public class Product {
 
     @Override
     public String toString() {
-        return String.format("%s/%s/%s\n",barcode, title, price);
+        return String.format("%s/%s/%s", barcode, title, price);
     }
 
     // TODO add public and private methods as per your requirements

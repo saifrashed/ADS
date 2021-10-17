@@ -2,10 +2,7 @@ package models;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
@@ -39,6 +36,7 @@ public class PurchaseTracker {
                 return 0;
             }
         });
+
     }
 
     /**

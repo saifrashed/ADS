@@ -9,27 +9,56 @@ public class SorterImpl<E> implements Sorter<E> {
      * Sorts all items by selection or insertion sort using the provided comparator
      * for deciding relative ordening of two items
      * Items are sorted 'in place' without use of an auxiliary list or array
+     *
      * @param items
      * @param comparator
-     * @return  the items sorted in place
+     * @return the items sorted in place
      */
     public List<E> selInsSort(List<E> items, Comparator<E> comparator) {
         // TODO implement selection or insertion sort
 
+        int n = items.size();
+
+        // Verplaats grens stapsgewijs vopr ongesorteerde subarray
+        for (int i = 0; i < n - 1; i++) {
+            // Zoek het minimumelement in ongesorteerde array
+            int minIndex = i;
+            for (int j = i + 1; j < n; j++)
+                if (comparator.compare(items.get(j), items.get(minIndex)) < 0)
+                    minIndex = j;
+
+            // Verwissel het gevonden minimumelement met het eerste element
+            swap(items, minIndex, i);
+        }
+
         return items;
+    }
+
+    /**
+     * Swap method
+     *
+     * @param items list where swap occurs
+     * @param i     First index
+     * @param j     Second index
+     */
+    public void swap(List<E> items, int i, int j) {
+        E temp = items.get(i);
+        items.set(i, items.get(j));
+        items.set(j, temp);
     }
 
     /**
      * Sorts all items by quick sort using the provided comparator
      * for deciding relative ordening of two items
      * Items are sorted 'in place' without use of an auxiliary list or array
+     *
      * @param items
      * @param comparator
-     * @return  the items sorted in place
+     * @return the items sorted in place
      */
     public List<E> quickSort(List<E> items, Comparator<E> comparator) {
         // sort the complete list of items from position 0 till size-1, encluding position size
-        this.quickSortPart(items, 0, items.size()-1, comparator);
+        this.quickSortPart(items, 0, items.size() - 1, comparator);
         return items;
     }
 
@@ -40,13 +69,50 @@ public class SorterImpl<E> implements Sorter<E> {
      *
      * @param items
      * @param comparator
-     * @return  the items sorted in place
+     * @return the items sorted in place
      */
     private void quickSortPart(List<E> items, int from, int to, Comparator<E> comparator) {
 
         // TODO quick sort the sublist of items between index positions 'from' and 'to' inclusive
 
+        if (to <= from) return;
+
+        int pivotIndex = partition(items, from, to, comparator);
+
+        // sort left half
+        quickSortPart(items, from, pivotIndex - 1, comparator);
+
+        //sort right half
+        quickSortPart(items, pivotIndex + 1, to, comparator);
+
     }
+
+    private int partition(List<E> items, int from, int to, Comparator<E> comparator) {
+
+        E pivot = items.get(from);
+        int lo = from + 1;
+        int hi = to;
+
+        do {
+
+            while (lo <= hi && comparator.compare(items.get(lo), pivot) < 0) lo++;
+            while (lo <= hi && comparator.compare(pivot, items.get(hi)) < 0) hi--;
+
+            if (lo <= hi) {
+                swap(items, lo, hi);
+
+                lo++;
+                hi--;
+            }
+
+        } while (lo <= hi);
+
+        items.set(from, items.get(hi));
+        items.set(hi, pivot);
+
+        return hi;
+    }
+
 
     /**
      * Identifies the lead collection of numTops items according to the ordening criteria of comparator
@@ -54,11 +120,12 @@ public class SorterImpl<E> implements Sorter<E> {
      * with use of (zero-based) heapSwim and heapSink operations.
      * The remaining items are kept in the tail of the list, in arbitrary order.
      * Items are sorted 'in place' without use of an auxiliary list or array or other positions in items
-     * @param numTops       the size of the lead collection of items to be found and sorted
+     *
+     * @param numTops    the size of the lead collection of items to be found and sorted
      * @param items
      * @param comparator
-     * @return              the items list with its first numTops items sorted according to comparator
-     *                      all other items >= any item in the lead collection
+     * @return the items list with its first numTops items sorted according to comparator
+     * all other items >= any item in the lead collection
      */
     public List<E> topsHeapSort(int numTops, List<E> items, Comparator<E> comparator) {
         // check 0 < numTops <= items.size()
@@ -97,7 +164,7 @@ public class SorterImpl<E> implements Sorter<E> {
         // the first numTops positions of the list now contain the lead collection
         // the reverseComparator heap condition applies to this lead collection
         // now use heapSort to realise full ordening of this collection
-        for (int i = numTops-1; i > 0; i--) {
+        for (int i = numTops - 1; i > 0; i--) {
             // loop-invariant: items[i+1..numTops-1] contains the tail part of the sorted lead collection
             // position 0 holds the root item of a heap of size i+1 organised by reverseComparator
             // this root item is the worst item of the remaining front part of the lead collection
@@ -120,8 +187,9 @@ public class SorterImpl<E> implements Sorter<E> {
      * Repairs the zero-based heap condition for items[heapSize-1] on the basis of the comparator
      * all items[0..heapSize-2] are assumed to satisfy the heap condition
      * The zero-bases heap condition says:
-     *                      all items[i] <= items[2*i+1] and items[i] <= items[2*i+2], if any
+     * all items[i] <= items[2*i+1] and items[i] <= items[2*i+2], if any
      * or equivalently:     all items[i] >= items[(i-1)/2]
+     *
      * @param items
      * @param heapSize
      * @param comparator
@@ -131,12 +199,14 @@ public class SorterImpl<E> implements Sorter<E> {
         //      i==0 || items[(i-1]/2] <= items[i]
 
     }
+
     /**
      * Repairs the zero-based heap condition for its root items[0] on the basis of the comparator
      * all items[1..heapSize-1] are assumed to satisfy the heap condition
      * The zero-bases heap condition says:
-     *                      all items[i] <= items[2*i+1] and items[i] <= items[2*i+2], if any
+     * all items[i] <= items[2*i+1] and items[i] <= items[2*i+2], if any
      * or equivalently:     all items[i] >= items[(i-1)/2]
+     *
      * @param items
      * @param heapSize
      * @param comparator

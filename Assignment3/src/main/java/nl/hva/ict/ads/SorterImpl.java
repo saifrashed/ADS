@@ -14,7 +14,7 @@ public class SorterImpl<E> implements Sorter<E> {
      * @param comparator
      * @return the items sorted in place
      */
-    public List<E> selInsSort(List<E> items, Comparator<E> comparator) {
+    public List<E> selInsSort(List<E> items, Comparator<E> comparator) { // selection sort
         // TODO implement selection or insertion sort
 
         int n = items.size();
@@ -32,19 +32,6 @@ public class SorterImpl<E> implements Sorter<E> {
         }
 
         return items;
-    }
-
-    /**
-     * Swap method
-     *
-     * @param items list where swap occurs
-     * @param i     First index
-     * @param j     Second index
-     */
-    public void swap(List<E> items, int i, int j) {
-        E temp = items.get(i);
-        items.set(i, items.get(j));
-        items.set(j, temp);
     }
 
     /**
@@ -128,6 +115,7 @@ public class SorterImpl<E> implements Sorter<E> {
      * all other items >= any item in the lead collection
      */
     public List<E> topsHeapSort(int numTops, List<E> items, Comparator<E> comparator) {
+
         // check 0 < numTops <= items.size()
         if (numTops <= 0) return items;
         else if (numTops > items.size()) return quickSort(items, comparator);
@@ -172,16 +160,20 @@ public class SorterImpl<E> implements Sorter<E> {
             // TODO swap item[0] and item[i];
             //  this moves item[0] to its designated position
 
+            swap(items, 0, i);
 
             // TODO the new root may have violated the heap condition
             //  repair the heap condition on the remaining heap of size i
 
+            heapSink(items, i, reverseComparator);
         }
         // alternatively we can realise full ordening with a partial quicksort:
-        // quickSortPart(items, 0, numTops-1, comparator);
+//         quickSortPart(items, 0, numTops - 1, comparator);
+
 
         return items;
     }
+
 
     /**
      * Repairs the zero-based heap condition for items[heapSize-1] on the basis of the comparator
@@ -198,6 +190,20 @@ public class SorterImpl<E> implements Sorter<E> {
         // TODO swim items[heapSize-1] up the heap until
         //      i==0 || items[(i-1]/2] <= items[i]
 
+        int childIndex = heapSize - 1;
+        int parentIndex = (childIndex - 1) / 2;
+
+        E swimmer = items.get(childIndex);
+
+        while (parentIndex >= 0 && comparator.compare(items.get(parentIndex), swimmer) > 0) {
+            items.set(childIndex, items.get(parentIndex));
+            childIndex = parentIndex;
+            parentIndex = (childIndex - 1) / 2;
+
+            if(parentIndex == 0) break;
+        }
+
+        items.set(childIndex, swimmer);
     }
 
     /**
@@ -215,5 +221,40 @@ public class SorterImpl<E> implements Sorter<E> {
         // TODO sink items[0] down the heap until
         //      2*i+1>=heapSize || (items[i] <= items[2*i+1] && items[i] <= items[2*i+2])
 
+        int parentIndex = 0;
+        int childIndex = 1;
+        E sinker = items.get(parentIndex);
+
+        while (childIndex < heapSize) {
+            E child = items.get(childIndex); // left child
+
+            if (childIndex + 1 < heapSize && comparator.compare(items.get(childIndex + 1), child) < 0) { // right child
+                childIndex++;
+                child = items.get(childIndex);
+            }
+
+            if (comparator.compare(sinker, child) <= 0) break;
+            items.set(parentIndex, child);
+
+            parentIndex = childIndex;
+            childIndex = (parentIndex * 2) + 1;
+        }
+
+        items.set(parentIndex, sinker);
+    }
+
+    /**
+     * Swap method
+     *
+     * @param items list where swap occurs
+     * @param i     First index
+     * @param j     Second index
+     */
+    public void swap(List<E> items, int i, int j) {
+        E temp = items.get(i);
+        items.set(i, items.get(j));
+        items.set(j, temp);
     }
 }
+
+

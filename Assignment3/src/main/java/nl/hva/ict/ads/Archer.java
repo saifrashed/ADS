@@ -14,7 +14,7 @@ public class Archer {
 
     // TODO add instance variable(s) to track the scores per round per arrow
 
-    int[][] score = new int[20][3];
+    int[][] score = new int[MAX_ROUNDS + 1][MAX_ARROWS];
 
     /**
      * Constructs a new instance of Archer and assigns a unique id to the instance.
@@ -97,7 +97,6 @@ public class Archer {
         } else if (this.getTotalScore() > other.getTotalScore()) {
             return -1;
         }
-
 
         if (this.getTotalMisses() > other.getTotalMisses()) {
             return 1;

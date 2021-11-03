@@ -104,7 +104,7 @@ class ArcherSorterTest {
 
         Collections.shuffle(numberList);
 
-        sorter.topsHeapSort(252, numberList, Integer::compareTo);
+        sorter.topsHeapSort(50, numberList, Integer::compareTo);
 
 
         Integer[] array = numberList.toArray(new Integer[0]);
@@ -113,7 +113,9 @@ class ArcherSorterTest {
     }
 
     /**
-     * Display and visualise a heap data structure
+     * Display and visualise heap data structure
+     *
+     * NOTE SOURCE: https://stackoverflow.com/questions/36385868/java-how-to-print-heap-stored-as-array-level-by-level
      *
      * @param heap
      * @param size

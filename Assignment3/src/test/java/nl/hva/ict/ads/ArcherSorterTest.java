@@ -3,7 +3,11 @@ package nl.hva.ict.ads;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.function.ToLongFunction;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -91,79 +95,36 @@ class ArcherSorterTest {
     }
 
 
-    @Test
-    void testHeapSwim() {
-
-        SorterImpl<Integer> sorter = new SorterImpl<>();
-
-        List<Integer> numberList = new ArrayList<>();
-
-        for (int i = 0; i < 250; i++) {
-            numberList.add(i);
-        }
-
-        Collections.shuffle(numberList);
-
-        sorter.topsHeapSort(50, numberList, Integer::compareTo);
-
-
-        Integer[] array = numberList.toArray(new Integer[0]);
-
-        printHeap(array, numberList.size() - 1);
-    }
-
-    /**
-     * Display and visualise heap data structure
-     *
-     * NOTE SOURCE: https://stackoverflow.com/questions/36385868/java-how-to-print-heap-stored-as-array-level-by-level
-     *
-     * @param heap
-     * @param size
-     */
-    private void printHeap(Integer[] heap, int size) {
-        int maxDepth = (int) (Math.log(size) / Math.log(2));  // log base 2 of n
-
-        StringBuilder hs = new StringBuilder();  // heap string builder
-        for (int d = maxDepth; d >= 0; d--) {  // number of layers, we build this backwards
-            int layerLength = (int) Math.pow(2, d);  // numbers per layer
-
-            StringBuilder line = new StringBuilder();  // line string builder
-            for (int i = layerLength; i < (int) Math.pow(2, d + 1); i++) {
-                // before spaces only on not-last layer
-                if (d != maxDepth) {
-                    line.append(" ".repeat((int) Math.pow(2, maxDepth - d)));
-                }
-                // extra spaces for long lines
-                int loops = maxDepth - d;
-                if (loops >= 2) {
-                    loops -= 2;
-                    while (loops >= 0) {
-                        line.append(" ".repeat((int) Math.pow(2, loops)));
-                        loops--;
-                    }
-                }
-
-                // add in the number
-                if (i <= size) {
-                    line.append(String.format("%-2s", heap[i]));  // add leading zeros
-                } else {
-                    line.append("--");
-                }
-
-                line.append(" ".repeat((int) Math.pow(2, maxDepth - d)));  // after spaces
-                // extra spaces for long lines
-                loops = maxDepth - d;
-                if (loops >= 2) {
-                    loops -= 2;
-                    while (loops >= 0) {
-                        line.append(" ".repeat((int) Math.pow(2, loops)));
-                        loops--;
-                    }
-                }
-            }
-            hs.insert(0, line.toString() + "\n");  // prepend line
-        }
-        System.out.println(hs.toString());
-    }
-
+//    @Test
+//    void measureSorting() {
+//
+//        long maxProblemSize = 1000000000;
+//
+//        SorterImpl<Long> sorter = new SorterImpl<>();
+//
+//
+//        for (long problemSize = 100; problemSize < maxProblemSize; problemSize = problemSize * 2) {
+//
+//            // creation of list
+//            List<Long> numberList = new ArrayList<>();
+//            long started, finished;
+//
+//            for (long j = 0; j < problemSize; j++) {
+//                numberList.add(j);
+//            }
+//
+//            Collections.shuffle(numberList);
+//            // end creation of list
+//
+//
+//            // measurement
+//            started = System.nanoTime();
+//            sorter.topsHeapSort((int) problemSize, numberList, Long::compareTo);
+////            sorter.quickSort(numberList, Long::compareTo);
+////            sorter.selInsSort(numberList, Long::compareTo);
+//            finished = System.nanoTime();
+//
+//            System.out.printf("Measurment of problem size (%d) %.3f msec\n", problemSize, (finished - started) / 1E6);
+//        }
+//    }
 }

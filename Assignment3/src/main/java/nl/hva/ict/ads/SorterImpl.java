@@ -17,15 +17,16 @@ public class SorterImpl<E> implements Sorter<E> {
     public List<E> selInsSort(List<E> items, Comparator<E> comparator) { // selection sort
         // TODO implement selection or insertion sort
 
-        int n = items.size();
+        int listSize = items.size();
 
         // Verplaats grens stapsgewijs vopr ongesorteerde subarray
-        for (int i = 0; i < n - 1; i++) {
+        for (int i = 0; i < listSize - 1; i++) {
             // Zoek het minimumelement in ongesorteerde array
             int minIndex = i;
-            for (int j = i + 1; j < n; j++)
-                if (comparator.compare(items.get(j), items.get(minIndex)) < 0)
-                    minIndex = j;
+
+            for (int j = i + 1; j < listSize; j++) {
+                if (comparator.compare(items.get(j), items.get(minIndex)) < 0) minIndex = j;
+            }
 
             // Verwissel het gevonden minimumelement met het eerste element
             swap(items, minIndex, i);
@@ -200,7 +201,7 @@ public class SorterImpl<E> implements Sorter<E> {
             childIndex = parentIndex;
             parentIndex = (childIndex - 1) / 2;
 
-            if(parentIndex == 0) break;
+            if (parentIndex == 0) break;
         }
 
         items.set(childIndex, swimmer);
@@ -254,6 +255,61 @@ public class SorterImpl<E> implements Sorter<E> {
         E temp = items.get(i);
         items.set(i, items.get(j));
         items.set(j, temp);
+    }
+
+
+    /**
+     * Display and visualise heap data structure
+     * <p>
+     * NOTE SOURCE: https://stackoverflow.com/questions/36385868/java-how-to-print-heap-stored-as-array-level-by-level
+     *
+     * @param heap
+     * @param size
+     */
+    private void printHeap(Integer[] heap, int size) {
+        int maxDepth = (int) (Math.log(size) / Math.log(2));  // log base 2 of n
+
+        StringBuilder hs = new StringBuilder();  // heap string builder
+        for (int d = maxDepth; d >= 0; d--) {  // number of layers, we build this backwards
+            int layerLength = (int) Math.pow(2, d);  // numbers per layer
+
+            StringBuilder line = new StringBuilder();  // line string builder
+            for (int i = layerLength; i < (int) Math.pow(2, d + 1); i++) {
+                // before spaces only on not-last layer
+                if (d != maxDepth) {
+                    line.append(" ".repeat((int) Math.pow(2, maxDepth - d)));
+                }
+                // extra spaces for long lines
+                int loops = maxDepth - d;
+                if (loops >= 2) {
+                    loops -= 2;
+                    while (loops >= 0) {
+                        line.append(" ".repeat((int) Math.pow(2, loops)));
+                        loops--;
+                    }
+                }
+
+                // add in the number
+                if (i <= size) {
+                    line.append(String.format("%-2s", heap[i]));  // add leading zeros
+                } else {
+                    line.append("--");
+                }
+
+                line.append(" ".repeat((int) Math.pow(2, maxDepth - d)));  // after spaces
+                // extra spaces for long lines
+                loops = maxDepth - d;
+                if (loops >= 2) {
+                    loops -= 2;
+                    while (loops >= 0) {
+                        line.append(" ".repeat((int) Math.pow(2, loops)));
+                        loops--;
+                    }
+                }
+            }
+            hs.insert(0, line.toString() + "\n");  // prepend line
+        }
+        System.out.println(hs.toString());
     }
 }
 

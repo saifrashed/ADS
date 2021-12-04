@@ -1,6 +1,7 @@
 package models;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Map;
 
 public class Measurement {
@@ -38,22 +39,39 @@ public class Measurement {
      * converts integer values to doubles as per unit of measure indicators
      * empty or corrupt values are replaced by Double.NaN
      * -1 values that indicate < 0.05 are replaced by 0.0
+     *
      * @param textLine
-     * @param stations  a map of Stations that can be accessed by station number STN
-     * @return          a new Measurement instance that records all data values of above quantities
-     *                  null if the station number cannot be resolved,
-     *                      or the record is incomplete or cannot be parsed
+     * @param stations a map of Stations that can be accessed by station number STN
+     * @return a new Measurement instance that records all data values of above quantities
+     * null if the station number cannot be resolved,
+     * or the record is incomplete or cannot be parsed
      */
-    public static Measurement fromLine(String textLine, Map<Integer,Station> stations) {
+    public static Measurement fromLine(String textLine, Map<Integer, Station> stations) {
         String[] fields = textLine.split(",");
         if (fields.length < NUM_FIELDS) return null;
 
         // TODO create a new Measurement instance
         //  further parse and convert and store all relevant quantities
 
+        // create a new Measurement instance
+        final Measurement measurement = new Measurement(stations.get(Integer.parseInt(fields[FIELD_STN].trim())), Integer.parseInt(fields[FIELD_YYMMDDDD].trim()));
 
+        double[] doubleFields = Arrays.stream(fields)
+                .map(String::trim)
+                .mapToDouble(fieldStr -> fieldStr.isEmpty() ? Double.NaN : Double.parseDouble(fieldStr))
+                .map(field -> field / 10)
+                .toArray();
 
-        return null;
+        measurement.setAverageWindSpeed(doubleFields[FIELD_FG]);
+        measurement.setMaxWindGust(doubleFields[FIELD_FXX]);
+        measurement.setAverageTemperature(doubleFields[FIELD_TG]);
+        measurement.setMinTemperature(doubleFields[FIELD_TN]);
+        measurement.setMaxTemperature(doubleFields[FIELD_TX]);
+        measurement.setSolarHours(doubleFields[FIELD_SQ]);
+        measurement.setPrecipitation(doubleFields[FIELD_RH]);
+        measurement.setMaxHourlyPrecipitation(doubleFields[FIELD_RHX]);
+
+        return measurement;
     }
 
     public Station getStation() {

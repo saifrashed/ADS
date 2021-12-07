@@ -53,23 +53,21 @@ public class Measurement {
         // TODO create a new Measurement instance
         //  further parse and convert and store all relevant quantities
 
-        // create a new Measurement instance
-        final Measurement measurement = new Measurement(stations.get(Integer.parseInt(fields[FIELD_STN].trim())), Integer.parseInt(fields[FIELD_YYMMDDDD].trim()));
+        // initialis
+        Measurement measurement = new Measurement(stations.get(Integer.parseInt(fields[FIELD_STN].trim())), Integer.parseInt(fields[FIELD_YYMMDDDD].trim()));
 
-        double[] doubleFields = Arrays.stream(fields)
-                .map(String::trim)
-                .mapToDouble(fieldStr -> fieldStr.isEmpty() ? Double.NaN : Double.parseDouble(fieldStr))
-                .map(field -> field / 10)
-                .toArray();
+        // use stream to format the fields
+        double[] formattedFields = Arrays.stream(fields).map(String::trim).mapToDouble(fieldVal -> fieldVal.isEmpty() ? Double.NaN : Double.parseDouble(fieldVal)).map(field -> field / 10).toArray();
 
-        measurement.setAverageWindSpeed(doubleFields[FIELD_FG]);
-        measurement.setMaxWindGust(doubleFields[FIELD_FXX]);
-        measurement.setAverageTemperature(doubleFields[FIELD_TG]);
-        measurement.setMinTemperature(doubleFields[FIELD_TN]);
-        measurement.setMaxTemperature(doubleFields[FIELD_TX]);
-        measurement.setSolarHours(doubleFields[FIELD_SQ]);
-        measurement.setPrecipitation(doubleFields[FIELD_RH]);
-        measurement.setMaxHourlyPrecipitation(doubleFields[FIELD_RHX]);
+        // set values
+        measurement.setAverageWindSpeed(formattedFields[FIELD_FG]);
+        measurement.setMaxWindGust(formattedFields[FIELD_FXX]);
+        measurement.setAverageTemperature(formattedFields[FIELD_TG]);
+        measurement.setMinTemperature(formattedFields[FIELD_TN]);
+        measurement.setMaxTemperature(formattedFields[FIELD_TX]);
+        measurement.setSolarHours(formattedFields[FIELD_SQ]);
+        measurement.setPrecipitation(formattedFields[FIELD_RH]);
+        measurement.setMaxHourlyPrecipitation(formattedFields[FIELD_RHX]);
 
         return measurement;
     }

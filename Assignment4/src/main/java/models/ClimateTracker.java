@@ -16,7 +16,7 @@ public class ClimateTracker {
 
     public Set<Station> getStations() {
         // TODO return all stations in this tracker
-        return Set.of(stations.values().toArray(Station[]::new));
+        return new HashSet<>(stations.values());
     }
 
     public Station findStationById(int stn) {
@@ -36,20 +36,9 @@ public class ClimateTracker {
     public Map<Station, Integer> numberOfMeasurementsByStation() {
         // TODO build a map resolving for each station its number of registered Measurement instances
 
-
-        Map<Station, Integer> map = new HashMap<>();
-
-
-        map.putAll(stations.values()
+        Map<Station, Integer> map = stations.entrySet()
                 .stream()
-                .collect(Collectors.toMap(s -> s, s -> s.getMeasurements().size())));
-
-
-        map.forEach((station, integer) -> {
-            System.out.println("Station: " + station + " - Amount measurements: " + integer);
-        });
-
-        System.out.println();
+                .collect(Collectors.toMap(e -> e.getValue(), e -> e.getValue().getMeasurements().size()));
 
         return map;
     }
@@ -63,7 +52,6 @@ public class ClimateTracker {
     public Map<Station, LocalDate> firstDayOfMeasurementByStation() {
         // TODO build a map resolving for each station the date of its first day of measurements
 
-        // measurements
         return stations.values().stream()
                 .filter(station -> station.firstDayOfMeasurement().isPresent())
                 .collect(Collectors.toMap(
@@ -81,9 +69,10 @@ public class ClimateTracker {
      */
     public Map<Station, Integer> numberOfValidValuesByStation(Function<Measurement, Double> mapper) {
         // TODO build a map resolving for each station the number of valid values for the specified quantity.
-
-
-        return null;
+        return stations.values().stream()
+                .collect(Collectors.toMap(x -> x, x ->
+                        (int) x.getMeasurements().stream().filter(o -> !Double.isNaN(mapper.apply(o))).count()
+                ));
     }
 
     /**
@@ -96,8 +85,26 @@ public class ClimateTracker {
     public Map<Integer, Double> annualAverageTemperatureTrend() {
         // TODO build a map collecting for each year the average temperature in that year
 
+//        Map<Integer, Double> map = stations.values().stream()
+//                .flatMap(x -> x.getMeasurements().stream())
+//                .collect(
+//                        Collectors.groupingBy(x -> x.getDate().getYear(), Collectors.averagingDouble(Measurement::getAverageTemperature)
+//                ));
+//
+//        map.forEach((year, average) -> {
+//            System.out.println(year + " - " + average);
+//        });
+//
+//        stations.forEach((numbe, station) -> {
+//            System.out.println(numbe + " - " + station.getName());
+//        });
 
-        return null;
+        return stations.values().stream()
+                .flatMap(x -> x.getMeasurements().stream())
+                .filter(d -> !Double.isNaN(d.getAverageTemperature()))
+                .collect(
+                        Collectors.groupingBy(x -> x.getDate().getYear(), Collectors.averagingDouble(Measurement::getAverageTemperature)
+                        ));
     }
 
     /**
@@ -113,8 +120,38 @@ public class ClimateTracker {
     public Map<Integer, Double> annualMaximumTrend(Function<Measurement, Double> mapper) {
         // TODO build a map collecting for each year the maximum value of the mapped quantity in that year
 
+//        OptionalDouble map = stations.values().stream()
+//                .flatMap(x -> x.getMeasurements().stream())
+//                .filter(d -> !Double.isNaN(mapper.apply(d)))
+//                .mapToDouble(mapper::apply)
+//                .max();
+//
 
-        return null;
+
+//        Map<Integer, Double> map = stations.values().stream()
+//                .flatMap(x -> x.getMeasurements().stream())
+//                .filter(d -> !Double.isNaN(mapper.apply(d)))
+//                .collect(Collectors.groupingBy(Collectors.summingInt(z), Measurement::getAverageTemperature));
+
+//        .flatMap(x -> x.getMeasurements().stream())
+//                .filter(d -> !Double.isNaN(mapper.apply(d)))
+//
+
+        //        stations.values().stream()
+//                .flatMap(x -> x.getMeasurements().stream())
+//                .filter(d -> !Double.isNaN(mapper.apply(d)))
+//                .collect(
+//                        Collectors.groupingBy(x -> x.getDate().getYear(), );
+//                        ))
+
+        Map<Integer, DoubleSummaryStatistics> map = stations.values().stream()
+                .flatMap(x -> x.getMeasurements().stream())
+                .filter(d -> !Double.isNaN(mapper.apply(d)))
+                .collect(
+                        Collectors.groupingBy(x -> x.getDate().getYear(), Collectors.summarizingDouble(mapper::apply))
+                );
+
+        return map.entrySet().stream().collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue().getMax()));
     }
 
     /**

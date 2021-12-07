@@ -2,6 +2,7 @@ package models;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.security.Key;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
@@ -85,20 +86,6 @@ public class ClimateTracker {
     public Map<Integer, Double> annualAverageTemperatureTrend() {
         // TODO build a map collecting for each year the average temperature in that year
 
-//        Map<Integer, Double> map = stations.values().stream()
-//                .flatMap(x -> x.getMeasurements().stream())
-//                .collect(
-//                        Collectors.groupingBy(x -> x.getDate().getYear(), Collectors.averagingDouble(Measurement::getAverageTemperature)
-//                ));
-//
-//        map.forEach((year, average) -> {
-//            System.out.println(year + " - " + average);
-//        });
-//
-//        stations.forEach((numbe, station) -> {
-//            System.out.println(numbe + " - " + station.getName());
-//        });
-
         return stations.values().stream()
                 .flatMap(x -> x.getMeasurements().stream())
                 .filter(d -> !Double.isNaN(d.getAverageTemperature()))
@@ -119,30 +106,6 @@ public class ClimateTracker {
      */
     public Map<Integer, Double> annualMaximumTrend(Function<Measurement, Double> mapper) {
         // TODO build a map collecting for each year the maximum value of the mapped quantity in that year
-
-//        OptionalDouble map = stations.values().stream()
-//                .flatMap(x -> x.getMeasurements().stream())
-//                .filter(d -> !Double.isNaN(mapper.apply(d)))
-//                .mapToDouble(mapper::apply)
-//                .max();
-//
-
-
-//        Map<Integer, Double> map = stations.values().stream()
-//                .flatMap(x -> x.getMeasurements().stream())
-//                .filter(d -> !Double.isNaN(mapper.apply(d)))
-//                .collect(Collectors.groupingBy(Collectors.summingInt(z), Measurement::getAverageTemperature));
-
-//        .flatMap(x -> x.getMeasurements().stream())
-//                .filter(d -> !Double.isNaN(mapper.apply(d)))
-//
-
-        //        stations.values().stream()
-//                .flatMap(x -> x.getMeasurements().stream())
-//                .filter(d -> !Double.isNaN(mapper.apply(d)))
-//                .collect(
-//                        Collectors.groupingBy(x -> x.getDate().getYear(), );
-//                        ))
 
         Map<Integer, DoubleSummaryStatistics> map = stations.values().stream()
                 .flatMap(x -> x.getMeasurements().stream())
@@ -165,8 +128,20 @@ public class ClimateTracker {
     public Map<Month, Double> allTimeAverageDailySolarByMonth() {
         // TODO build a map collecting for each month the average value of daily sunshine hours
 
+        TreeMap<Month, Double> sorted = new TreeMap<>();
 
-        return null;
+
+        Map<Month, Double> map = stations.values().stream()
+                .flatMap(x -> x.getMeasurements().stream())
+                .filter(d -> !Double.isNaN(d.getSolarHours()))
+                .sorted((Comparator.comparing(o -> o.getDate().getMonthValue())))
+                .collect(
+                        Collectors.groupingBy(m -> m.getDate().getMonth(), Collectors.averagingDouble(Measurement::getSolarHours))
+                );
+
+
+        sorted.putAll(map);
+        return sorted;
     }
 
     /**
@@ -184,8 +159,14 @@ public class ClimateTracker {
         //  hint: first build a helper map that accumulates the yearsums of negative minimum temperatures
         //        then find the coldest year in that helper map
 
+        Map<Integer, Double> map = stations.values().stream()
+                .flatMap(x -> x.getMeasurements().stream())
+                .filter(d -> !Double.isNaN(d.getAverageTemperature()))
+                .collect(
+                        Collectors.groupingBy(x -> x.getDate().getYear(), Collectors.averagingDouble(Measurement::getMinTemperature)
+                        ));
 
-        return -1;
+        return map.entrySet().stream().min((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getKey();
     }
 
     /**

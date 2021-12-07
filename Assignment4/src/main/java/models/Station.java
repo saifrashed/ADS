@@ -80,14 +80,10 @@ public class Station {
         // TODO calculate the maximum wind gust speed across all valid measurements
 
         double maxTemp = measurements.values().stream()
+                .filter(x -> !Double.isNaN(x.getMaxTemperature()))
                 .collect(Collectors.summarizingDouble(measurement -> measurement.getAverageTemperature())).getMax();
 
-        if (!Double.isNaN(maxTemp)) {
-            return measurements.values().stream()
-                    .collect(Collectors.summarizingDouble(measurement -> measurement.getAverageTemperature())).getMax();
-        } else {
-            return Double.NaN;
-        }
+        return maxTemp;
     }
 
     /**
@@ -130,24 +126,7 @@ public class Station {
         // TODO calculate and return the total precipitation across the given period
         //  use the 'subMap' method to only process the measurements within the given period
 
-//        .subMap(startDate, endDate)
-
-
-//        measurements.entrySet().stream().collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue().getPrecipitation()));
-//
-//        Double map = measurements.subMap(startDate, true, endDate, true ).entrySet().stream()
-//                .filter(d -> !Double.isNaN(d.getValue().getPrecipitation()))
-//                .mapToDouble(x -> x.getValue().getPrecipitation())
-//                .sum();
-
-//        measurements.entrySet().stream().collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue().getPrecipitation())).forEach((item, item2) -> System.out.println(item + "-" + item2));
-//        System.out.println();
-//        measurements.subMap(startDate, true, endDate, true ).entrySet().stream().collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue().getPrecipitation())).forEach((item, item2) -> System.out.println(item + "-" + item2));
-
-//        System.out.println(map);
-
-
-        return measurements.subMap(startDate, true, endDate, true ).entrySet().stream()
+        return measurements.subMap(startDate, true, endDate, true).entrySet().stream()
                 .filter(d -> !Double.isNaN(d.getValue().getPrecipitation()))
                 .mapToDouble(x -> x.getValue().getPrecipitation())
                 .sum();
@@ -167,7 +146,7 @@ public class Station {
         // TODO calculate and return the average value of the quantity mapper across the given period
         //  use the 'subMap' method to only process the measurements within the given period
 
-        OptionalDouble result = measurements.subMap(startDate, true, endDate, true ).entrySet().stream()
+        OptionalDouble result = measurements.subMap(startDate, true, endDate, true).entrySet().stream()
                 .filter(d -> !Double.isNaN(mapper.apply(d.getValue())))
                 .mapToDouble(x -> mapper.apply(x.getValue()))
                 .average();

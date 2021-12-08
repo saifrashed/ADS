@@ -6,9 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -90,5 +89,10 @@ public class ClimateTrackerTest {
                 0.01);
 
         assertEquals(2020, climateTracker.coldestYear());
+    }
+
+    @Test
+    void checkColdestYear() {
+
     }
 }

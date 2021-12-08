@@ -85,7 +85,6 @@ public class ClimateTracker {
      */
     public Map<Integer, Double> annualAverageTemperatureTrend() {
         // TODO build a map collecting for each year the average temperature in that year
-
         return stations.values().stream()
                 .flatMap(x -> x.getMeasurements().stream())
                 .filter(d -> !Double.isNaN(d.getAverageTemperature()))
@@ -106,7 +105,6 @@ public class ClimateTracker {
      */
     public Map<Integer, Double> annualMaximumTrend(Function<Measurement, Double> mapper) {
         // TODO build a map collecting for each year the maximum value of the mapped quantity in that year
-
         Map<Integer, DoubleSummaryStatistics> map = stations.values().stream()
                 .flatMap(x -> x.getMeasurements().stream())
                 .filter(d -> !Double.isNaN(mapper.apply(d)))
@@ -163,15 +161,38 @@ public class ClimateTracker {
                 .flatMap(x -> x.getMeasurements().stream())
                 .filter(d -> !Double.isNaN(d.getAverageTemperature()))
                 .collect(
-                        Collectors.groupingBy(x -> x.getDate().getYear(), Collectors.summingDouble(Measurement::getMinTemperature)
+                        Collectors.groupingBy(x -> x.getDate().getYear(), Collectors.averagingDouble(Measurement::getAverageTemperature)
                         ));
-
-        map.forEach((dataOne, dataTwo) -> {
-            System.out.println(dataOne +" - "+ dataTwo);
-        });
 
         return map.entrySet().stream().min((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getKey();
     }
+
+    /**
+     * calculate the coldest year of all times.
+     * The coldest year is defined as the year with the lowest total sum of daily minimum temperatures below zero
+     * accumulated across all stations
+     * I.e. any daily value of a minimum temperature at a station that is above zero should not be included in its sum for the year
+     * The lowest yearsum of negative minimum temperatures indicates the coldest year.
+     *
+     * @return the coldest year (a number between 1900 and 2099)
+     * return -1 if no valid minimum temperature measurements are available
+     */
+    public Map<Integer, Double> coldestYearFind(int year) {
+        // TODO determine the coldest year
+        //  hint: first build a helper map that accumulates the yearsums of negative minimum temperatures
+        //        then find the coldest year in that helper map
+
+        Map<Integer, Double> map = stations.values().stream()
+                .flatMap(x -> x.getMeasurements().stream())
+                .filter(d -> !Double.isNaN(d.getMinTemperature()) && d.getDate().getYear() == year)
+                .collect(
+                        Collectors.groupingBy(x -> x.getDate().getYear(), Collectors.averagingDouble(Measurement::getMinTemperature)
+                        ));
+
+
+        return map;
+    }
+
 
     /**
      * imports all station and measurement information

@@ -81,7 +81,7 @@ public class Station {
 
         double maxTemp = measurements.values().stream()
                 .filter(x -> !Double.isNaN(x.getMaxTemperature()))
-                .collect(Collectors.summarizingDouble(measurement -> measurement.getAverageTemperature())).getMax();
+                .collect(Collectors.summarizingDouble(measurement -> measurement.getMaxTemperature())).getMax();
 
         return maxTemp;
     }

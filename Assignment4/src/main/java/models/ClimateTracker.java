@@ -163,8 +163,12 @@ public class ClimateTracker {
                 .flatMap(x -> x.getMeasurements().stream())
                 .filter(d -> !Double.isNaN(d.getAverageTemperature()))
                 .collect(
-                        Collectors.groupingBy(x -> x.getDate().getYear(), Collectors.averagingDouble(Measurement::getMinTemperature)
+                        Collectors.groupingBy(x -> x.getDate().getYear(), Collectors.summingDouble(Measurement::getMinTemperature)
                         ));
+
+        map.forEach((dataOne, dataTwo) -> {
+            System.out.println(dataOne +" - "+ dataTwo);
+        });
 
         return map.entrySet().stream().min((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getKey();
     }

@@ -89,7 +89,8 @@ public class ClimateTracker {
                 .flatMap(x -> x.getMeasurements().stream())
                 .filter(d -> !Double.isNaN(d.getAverageTemperature()))
                 .collect(
-                        Collectors.groupingBy(x -> x.getDate().getYear(), Collectors.averagingDouble(Measurement::getAverageTemperature)
+                        Collectors.groupingBy(x -> x.getDate().getYear(),
+                                Collectors.averagingDouble(Measurement::getAverageTemperature)
                         ));
     }
 
@@ -159,12 +160,12 @@ public class ClimateTracker {
 
         Map<Integer, Double> map = stations.values().stream()
                 .flatMap(x -> x.getMeasurements().stream())
-                .filter(d -> !Double.isNaN(d.getAverageTemperature()))
+                .filter(d -> !Double.isNaN(d.getMinTemperature()) && d.getMinTemperature() < 0)
                 .collect(
-                        Collectors.groupingBy(x -> x.getDate().getYear(), Collectors.averagingDouble(Measurement::getAverageTemperature)
+                        Collectors.groupingBy(x -> x.getDate().getYear(), Collectors.summingDouble(Measurement::getMinTemperature)
                         ));
 
-        return map.entrySet().stream().min((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getKey();
+        return map.entrySet().stream().min(Comparator.comparingDouble(Map.Entry::getValue)).get().getKey();
     }
 
     /**

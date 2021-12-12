@@ -8,17 +8,14 @@ import java.util.stream.Collectors;
 public class Station {
     private final int stn;
     private final String name;
-    private NavigableMap<LocalDate, Measurement> measurements = new TreeMap<>();
+    private final NavigableMap<LocalDate, Measurement> measurements = new TreeMap<>();
 
     public Station(int id, String name) {
         this.stn = id;
         this.name = name;
-        // TODO initialize the measurements data structure with a suitable implementation class.
     }
 
     public Collection<Measurement> getMeasurements() {
-        // TODO return the measurements of this station
-
         return measurements.values();
     }
 
@@ -58,9 +55,6 @@ public class Station {
     public int addMeasurements(Collection<Measurement> newMeasurements) {
         int oldSize = this.getMeasurements().size();
 
-        // TODO add all newMeasurements to the station
-        //  ignore those who are not related to this station and entries with a duplicate date.
-
         Map<LocalDate, Measurement> newMeasurementMap = newMeasurements.stream()
                 .filter(m -> m.getStation().equals(this) && !measurements.containsValue(m)) // check for assoc station and prevent duplication
                 .collect(Collectors.toMap(Measurement::getDate, Function.identity())); // put measurement in map
@@ -77,13 +71,9 @@ public class Station {
      * returns Double.NaN when no valid measurements are available
      */
     public double allTimeMaxTemperature() {
-        // TODO calculate the maximum wind gust speed across all valid measurements
-
-        double maxTemp = measurements.values().stream()
+        return measurements.values().stream()
                 .filter(x -> !Double.isNaN(x.getMaxTemperature()))
-                .collect(Collectors.summarizingDouble(measurement -> measurement.getMaxTemperature())).getMax();
-
-        return maxTemp;
+                .collect(Collectors.summarizingDouble(Measurement::getMaxTemperature)).getMax();
     }
 
     /**
@@ -91,9 +81,6 @@ public class Station {
      * returns Optional.empty() if no measurements are available
      */
     public Optional<LocalDate> firstDayOfMeasurement() {
-        // TODO get the date of the first measurement at this station
-
-        // retrieve measurements, find minimal date
         return measurements.keySet().stream()
                 .min(Comparator.comparing(LocalDate::toEpochDay));
     }
@@ -107,9 +94,6 @@ public class Station {
      * @return the number of valid values found
      */
     public int numValidValues(Function<Measurement, Double> mapper) {
-        // TODO count the number of valid values that can be accessed in the measurements collection
-        //  by means of the mapper access function
-
         return (int) getMeasurements().stream().filter(o -> !Double.isNaN(mapper.apply(o))).count();
     }
 
@@ -123,12 +107,9 @@ public class Station {
      * 0.0 if no measurements have been made in this period.
      */
     public double totalPrecipitationBetween(LocalDate startDate, LocalDate endDate) {
-        // TODO calculate and return the total precipitation across the given period
-        //  use the 'subMap' method to only process the measurements within the given period
-
-        return measurements.subMap(startDate, true, endDate, true).entrySet().stream()
-                .filter(d -> !Double.isNaN(d.getValue().getPrecipitation()))
-                .mapToDouble(x -> x.getValue().getPrecipitation())
+        return measurements.subMap(startDate, true, endDate, true).values().stream()
+                .filter(measurement -> !Double.isNaN(measurement.getPrecipitation()))
+                .mapToDouble(Measurement::getPrecipitation)
                 .sum();
     }
 
@@ -143,19 +124,15 @@ public class Station {
      * Double.NaN if no valid measurements are available from this period.
      */
     public double averageBetween(LocalDate startDate, LocalDate endDate, Function<Measurement, Double> mapper) {
-        // TODO calculate and return the average value of the quantity mapper across the given period
-        //  use the 'subMap' method to only process the measurements within the given period
-
-        OptionalDouble result = measurements.subMap(startDate, true, endDate, true).entrySet().stream()
-                .filter(d -> !Double.isNaN(mapper.apply(d.getValue())))
-                .mapToDouble(x -> mapper.apply(x.getValue()))
+        OptionalDouble result = measurements.subMap(startDate, true, endDate, true).values().stream()
+                .filter(measurement -> !Double.isNaN(mapper.apply(measurement)))
+                .mapToDouble(mapper::apply)
                 .average();
 
         return result.orElse(Double.NaN);
     }
 
     // TODO any other methods required to make it work
-
 
     @Override
     public boolean equals(Object o) {

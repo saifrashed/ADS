@@ -50,16 +50,14 @@ public class Measurement {
         String[] fields = textLine.split(",");
         if (fields.length < NUM_FIELDS) return null;
 
-        // TODO create a new Measurement instance
-        //  further parse and convert and store all relevant quantities
+        Measurement measurement = new Measurement(
+                stations.get(Integer.parseInt(fields[FIELD_STN].trim())), Integer.parseInt(fields[FIELD_YYMMDDDD].trim()));
 
-        // initialis
-        Measurement measurement = new Measurement(stations.get(Integer.parseInt(fields[FIELD_STN].trim())), Integer.parseInt(fields[FIELD_YYMMDDDD].trim()));
+        double[] formattedFields = Arrays.stream(fields)
+                .map(String::trim)
+                .mapToDouble(field -> field.isEmpty() ? Double.NaN : Double.parseDouble(field) / 10)
+                .toArray();
 
-        // use stream to format the fields
-        double[] formattedFields = Arrays.stream(fields).map(String::trim).mapToDouble(fieldVal -> fieldVal.isEmpty() ? Double.NaN : Double.parseDouble(fieldVal)).map(field -> field / 10).toArray();
-
-        // set values
         measurement.setAverageWindSpeed(formattedFields[FIELD_FG]);
         measurement.setMaxWindGust(formattedFields[FIELD_FXX]);
         measurement.setAverageTemperature(formattedFields[FIELD_TG]);

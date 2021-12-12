@@ -1,5 +1,8 @@
+import models.Measurement;
 import models.Station;
 import org.junit.jupiter.api.*;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,5 +35,4 @@ public class StationTest {
         assertEquals("Maastricht", station2.getName());
         assertEquals(null, station3);
     }
-
 }

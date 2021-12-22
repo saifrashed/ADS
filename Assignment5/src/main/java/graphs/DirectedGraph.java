@@ -44,9 +44,10 @@ public class DirectedGraph<V extends Identifiable, E> {
     public Collection<V> getNeighbours(V fromVertex) {
         if (fromVertex == null) return null;
 
+
         // TODO retrieve the collection of neighbour vertices of fromVertex out of the edges data structure
 
-        return null;
+        return new ArrayList<>(this.edges.get(fromVertex).keySet());
     }
     public Collection<V> getNeighbours(String fromVertexId) {
         return this.getNeighbours(this.getVertexById(fromVertexId));
@@ -65,10 +66,27 @@ public class DirectedGraph<V extends Identifiable, E> {
 
         // TODO retrieve the collection of out-going edges which connect fromVertex with a neighbour in the edges data structure
 
-        return null;
+        if (!this.edges.containsKey(fromVertex)) {
+            return null;
+        }
+
+        if (this.edges.get(fromVertex).size() == 0) {
+            return new ArrayList<>();
+        }
+
+        return this.edges.get(fromVertex).values();
     }
+
     public Collection<E> getEdges(String fromId) {
-        return this.getEdges(this.getVertexById(fromId));
+        if (!this.edges.containsKey(this.getVertexById(fromId))) {
+            return null;
+        }
+
+        if (this.edges.get(this.getVertexById(fromId)).size() == 0) {
+            return new ArrayList<>();
+        }
+
+        return this.edges.get(this.getVertexById(fromId)).values();
     }
 
     /**
@@ -83,9 +101,15 @@ public class DirectedGraph<V extends Identifiable, E> {
         // TODO add and return the newVertex, or return the existing duplicate vertex with the same Id
         //  pay attention to sustaining representation invariant items 1. and 4.
 
+        if (this.vertices.putIfAbsent(newVertex.getId(), newVertex) == null) {
+            this.edges.put(newVertex, new HashMap<>());
+            return newVertex;
+        } else {
+            return getVertexById(newVertex.getId());
+        }
 
-        // a proper vertex shall be returned at all times
-        return null;
+//        // a proper vertex shall be returned at all times
+//        return null;
     }
 
 
@@ -103,8 +127,28 @@ public class DirectedGraph<V extends Identifiable, E> {
     public boolean addEdge(V fromVertex, V toVertex, E newEdge) {
         // TODO add (directed) newEdge to the graph between fromVertex and toVertex
 
+        if (fromVertex == null || toVertex == null) {
+            return false;
+        }
 
-        return false;
+        Map<V, E> fromVertexNeighbours = this.edges.get(fromVertex);
+
+        if (fromVertexNeighbours == null) {
+            this.addOrGetVertex(fromVertex);
+            this.addOrGetVertex(toVertex);
+
+            this.edges.putIfAbsent(fromVertex, new HashMap<V, E>());
+            this.edges.get(fromVertex).put(toVertex, newEdge);
+
+            return true;
+        }
+
+        if (this.edges.get(fromVertex).containsKey(toVertex)) {
+            return false;
+        }
+
+        fromVertexNeighbours.put(toVertex, newEdge);
+        return true;
     }
 
     /**
@@ -119,8 +163,28 @@ public class DirectedGraph<V extends Identifiable, E> {
     public boolean addEdge(String fromId, String toId, E newEdge) {
         // TODO add (directed) newEdge to the graph between fromId and toId
 
+        if (this.vertices.get(fromId) == null || this.vertices.get(toId) == null) {
+            return false;
+        }
 
-        return false;
+        Map<V, E> fromVertexNeighbours = this.edges.get(this.vertices.get(fromId));
+
+        if (fromVertexNeighbours == null) {
+            this.addOrGetVertex(this.vertices.get(fromId));
+            this.addOrGetVertex(this.vertices.get(toId));
+
+            this.edges.putIfAbsent(this.vertices.get(fromId), new HashMap<V, E>());
+            this.edges.get(this.vertices.get(fromId)).put(this.vertices.get(toId), newEdge);
+
+            return true;
+        }
+
+        if (this.edges.get(this.vertices.get(fromId)).containsKey(this.vertices.get(toId))) {
+            return false;
+        }
+
+        fromVertexNeighbours.put(this.vertices.get(toId), newEdge);
+        return true;
     }
 
     /**
@@ -158,7 +222,11 @@ public class DirectedGraph<V extends Identifiable, E> {
         if (fromVertex == null || toVertex == null) return null;
         // TODO retrieve the directed edge between vertices fromVertex and toVertex from the graph
 
-        return null;
+        if (this.edges.get(fromVertex).get(toVertex) == null) {
+            return null;
+        }
+
+        return this.edges.get(fromVertex).get(toVertex);
     }
 
     public E getEdge(String fromId, String toId) {
@@ -179,8 +247,7 @@ public class DirectedGraph<V extends Identifiable, E> {
     public int getNumEdges() {
         // TODO calculate and return the total number of directed edges in the graph
 
-
-        return 0;
+        return this.edges.values().stream().mapToInt(i -> i.values().size()).sum();
     }
 
     /**
@@ -253,6 +320,39 @@ public class DirectedGraph<V extends Identifiable, E> {
 
         // TODO calculate the path from start to target by recursive depth-first-search
 
+        DGPath newPath = dfsRecursive(startId, targetId, path);
+
+        System.out.println(newPath);
+
+        return newPath;
+    }
+
+    /**
+     * Recursive DFS helper
+     *
+     * @param currentId vertices to proces
+     * @param targetId  Targeted vertices
+     * @param newPath   New path object
+     * @return A path object
+     */
+    public DGPath dfsRecursive(String currentId, String targetId, DGPath newPath) {
+
+        if (newPath.visited.contains(getVertexById(currentId))) return null;
+        newPath.visited.add(getVertexById(currentId));
+
+        if (currentId.equals(targetId)) { // bail out if target matches the current
+            newPath.vertices.addLast(getVertexById(currentId));
+            return newPath;
+        }
+
+        for (V neighbour : getNeighbours(currentId)) {
+            DGPath path = dfsRecursive(neighbour.getId(), targetId, newPath);
+            if (path != null) {
+                path.vertices.addFirst(getVertexById(currentId));
+                return path;
+            }
+        }
+
         return null;
     }
 
@@ -260,11 +360,12 @@ public class DirectedGraph<V extends Identifiable, E> {
     /**
      * Uses a breadth-first search algorithm to find a path from the start vertex to the target vertex in the graph
      * All vertices that are being visited by the search should also be registered in path.visited
+     *
      * @param startId
      * @param targetId
-     * @return  the path from start to target
-     *          returns null if either start or target cannot be matched with a vertex in the graph
-     *                          or no path can be found from start to target
+     * @return the path from start to target
+     * returns null if either start or target cannot be matched with a vertex in the graph
+     * or no path can be found from start to target
      */
     public DGPath breadthFirstSearch(String startId, String targetId) {
 
@@ -274,16 +375,40 @@ public class DirectedGraph<V extends Identifiable, E> {
 
         // initialise the result path of the search
         DGPath path = new DGPath();
-        path.visited.add(start);
+        path.vertices.addLast(target);
 
         // easy target
         if (start.equals(target)) {
-            path.vertices.add(target);
+            path.visited.add(start);
             return path;
         }
 
+        Queue<V> fifoQueue = new LinkedList<>();
+        Map<V, V> visitedFrom = new HashMap<>();
+
+        fifoQueue.offer(start);
+        visitedFrom.put(start, null);
+
         // TODO calculate the path from start to target by breadth-first-search
 
+        V current = fifoQueue.poll();
+
+        while (current != null) {
+            for (V neighbour : getNeighbours(current)) {
+                if (neighbour.equals(target)) {
+                    while (current != null) {
+                        path.vertices.addFirst(current);
+                        current = visitedFrom.get(current);
+                    }
+                    return path;
+                } else if (!visitedFrom.containsKey(neighbour)) {
+                    path.visited.add(neighbour);
+                    visitedFrom.put(neighbour, current);
+                    fifoQueue.offer(neighbour);
+                }
+            }
+            current = fifoQueue.poll();
+        }
 
         return null;
     }
@@ -344,19 +469,51 @@ public class DirectedGraph<V extends Identifiable, E> {
         progressData.put(start, nextDspNode);
 
         while (nextDspNode != null) {
-
             // TODO continue Dijkstra's algorithm to process nextDspNode
             //  mark nodes as you complete their processing
             //  register all visited vertices while going for statistical purposes
             //  if you hit the target: complete the path and bail out !!!
 
+            V vertex = nextDspNode.vertex;
 
+            //If target is found
+            if (vertex.equals(target)) {
+                path.totalWeight = (progressData.get(target).weightSumTo);
 
+                DSPNode temp = nextDspNode; // temp var to store sequence of nodes
 
+                while (temp != null) { // build path backwards and push to path queue.
+                    path.vertices.push(temp.vertex);
+                    temp = progressData.get(temp.fromVertex);
+                }
 
+                return path;
+            }
+
+            //loop all neighbours
+            for (V neighbours : getNeighbours(vertex)) {
+
+                double distance = weightMapper.apply(getEdge(vertex, neighbours)) + nextDspNode.weightSumTo;
+                //check if not in progress data or
+                if (!progressData.containsKey(neighbours) || distance < progressData.get(neighbours).weightSumTo) {
+                    DSPNode dspNode = new DSPNode(neighbours);
+                    dspNode.weightSumTo = distance;
+                    dspNode.fromVertex = vertex;
+                    progressData.put(neighbours, dspNode);
+                    path.getVisited().add(neighbours);
+                }
+            }
+
+            nextDspNode.marked = true; // mark as processed
 
             // TODO find the next nearest node that is not marked yet
-
+            nextDspNode = progressData.values()
+                    .stream()
+                    .filter(dspNode -> !dspNode.marked)
+                    .reduce((dspNode, dspNode2) -> {
+                        if (dspNode.compareTo(dspNode2) < 0) return dspNode;
+                        else return dspNode2;
+                    }).orElse(null);
         }
 
         // no path found, graph was not connected ???

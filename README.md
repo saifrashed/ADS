@@ -14,9 +14,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a>
+    <img src="https://blog-c7ff.kxcdn.com/blog/wp-content/uploads/2019/11/Banner-Blog-1A-1.jpg" alt="Logo" width="80" height="80">
 
   <h3 align="center"># Algorithms and Data Structures</h3>
 

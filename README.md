@@ -1,14 +1,28 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
+Algorithms and Data structures builds on the knowledge and skills i have developed 
+during the first-year programming courses (Programming, OOP1 and OOP2). Now, i will 
+learn and practice implementation of more complex algorithms and data structures. The use 
+cases will more authentic and related to real business problems and i will explore how 
+commonly used data structures work under the hood.
 
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should implement DRY principles to the rest of your life :smile:
+Subjects:
+* Abstract Data Types, wrapper classes, interfaces, exceptions 
+* List, ArrayList, LinkedList, local class, linear search, representation invariants 
+* Generics, Iterable, Iterator
+* Functional Interfaces, lambda expressions Comparator, List.sort
+* Recursion, binary search, loop invariants
+* Big-O efficiency, simple sorts 
+* MergeSort, QuickSort,
+* Stack, Queue, Heap 
+* Hashing, HashSets, HashMaps
+* (Binary) Search Trees, TreeSet, TreeMap 
+* Streams, Reducers, Collectors, Method chaining
+* Graphs, Spanning Tree, Builder pattern
+* Depth-First Search, Breadth-First Search. 
+* Minimum Spanning Tree, Dijkstra shortest path
 
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
 
 Use the `BLANK_README.md` to get started.
 
